@@ -1,9 +1,11 @@
 import Seo from "./../components/Seo";
 import styled from "styled-components";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { getSearchList, IGetListResult } from "./../api/youTubeApi";
 import Loader from "./../components/Loader";
 import YouTubeList from "./../components/YoutubeList";
+import { useScroll } from "framer-motion";
+import { useEffect } from "react";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
@@ -22,25 +24,35 @@ const Grid = styled.div`
 `;
 
 export default function Video() {
-  const { data: vData, isLoading: isVLoading } = useQuery<IGetListResult>(
-    ["videos"],
-    getSearchList
+  const { scrollYProgress } = useScroll();
+  const { data, fetchNextPage } = useInfiniteQuery<IGetListResult>(
+    ["videosPage"],
+    ({ pageParam }) => getSearchList(pageParam),
+    {
+      getNextPageParam: (lastPage) => lastPage.nextPageToken,
+    }
   );
+  useEffect(() => {
+    scrollYProgress.onChange(() => {
+      if (scrollYProgress.get() === 1) {
+        fetchNextPage();
+      }
+    });
+  }, [scrollYProgress, fetchNextPage]);
 
   return (
     <Container id="ctn">
       <Seo title="간택당한 집사s" />
-      {isVLoading ? (
-        <Loader />
-      ) : (
-        <>
-          <Grid>
-            <div style={{ gridColumn: "span 4" }}>
-              <YouTubeList data={vData} />
-            </div>
-          </Grid>
-        </>
-      )}
+
+      <>
+        <Grid>
+          <div style={{ gridColumn: "span 4" }}>
+            {data?.pages.map((page, i) => (
+              <YouTubeList key={i} data={page} />
+            ))}
+          </div>
+        </Grid>
+      </>
     </Container>
   );
 }

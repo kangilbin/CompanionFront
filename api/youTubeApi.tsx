@@ -66,16 +66,17 @@ export async function getPopularList() {
     });
 }
 
-export async function getSearchList() {
+export async function getSearchList(token: string = "") {
   return axios
     .get(`${BASE_PATH}/videos`, {
       params: {
         part: "snippet",
         chart: "mostPopular",
         regionCode: "kr",
-        maxResults: 15,
+        maxResults: 16,
         videoCategoryId: 15,
         key: API_KEY,
+        pageToken: token,
       },
     })
     .then((response) => response.data)

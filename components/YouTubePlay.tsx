@@ -58,6 +58,7 @@ export default function YouTubePlay() {
         <YouTube
           className="ifr_youtube"
           videoId={value?.id}
+          loading="lazy"
           opts={opts}
           iframeClassName="ifr_youtube"
           onReady={onPlayerReady}
