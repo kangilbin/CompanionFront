@@ -65,6 +65,24 @@ const tabVariants = {
   },
 };
 
+const SubTab = styled.div`
+  grid-column: 3/5;
+  margin-top: 10px;
+`;
+const SubPage = styled.a`
+  cursor: pointer;
+  text-decoration-line: none;
+  font-family: "Dongle", sans-serif;
+  font-size: 1.5rem;
+  padding: 0px 5px 0px 5px;
+  border: 2px solid ${(props) => props.theme.pointColor};
+  color: #00c3ff;
+  border-radius: 15px;
+  &:hover {
+    box-shadow: 1px 1px 2px 1px rgb(195 243 255);
+    color: #a39595;
+  }
+`;
 export default function NavBar() {
   const router = useRouter();
   return (
@@ -107,6 +125,11 @@ export default function NavBar() {
           {router.pathname === "/lose" && <Line layoutId="line" />}
         </Page>
       </Link>
+      <SubTab>
+        <Link href="/adoption" legacyBehavior>
+          <SubPage>유기동물</SubPage>
+        </Link>
+      </SubTab>
     </Menu>
   );
 }

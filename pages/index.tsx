@@ -13,7 +13,6 @@ const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
   height: 100vh;
   position: relative;
-  top: 3rem;
   padding: 10px;
 `;
 
@@ -105,7 +104,10 @@ export default function Main() {
             <div style={{ gridColumn: "span 4" }}>
               <SubText>
                 <span>Best 영상</span>
-                <Link href="/video">
+                <Link
+                  href="/video"
+                  style={{ textDecorationLine: "blink", color: "black" }}
+                >
                   <AddBoard>더보기</AddBoard>
                 </Link>
               </SubText>
