@@ -21,21 +21,3 @@ export const elapsedTime = (date: string) => {
   }
   return "방금 전";
 };
-
-export const dateFormat = (dt: string) => {
-  let day = ["일", "월", "화", "수", "목", "금", "토"];
-
-  let date = new Date(dt);
-
-  let dateFormat =
-    date.getFullYear() +
-    "년 " +
-    (date.getMonth() + 1) +
-    "월 " +
-    date.getDate() +
-    "일 " +
-    day[date.getDay()] +
-    "요일 ";
-
-  return dateFormat;
-};

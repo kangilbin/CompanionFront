@@ -2,11 +2,10 @@ import styled from "styled-components";
 import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getSidoList, getSigunguList } from "../api/animalApi";
 import { useRecoilState } from "recoil";
-import { isSidoAtom } from "../common/atoms";
-import { isSigunguAtom } from "./../common/atoms";
-import DatePicker from "./DatePicker";
+import { getSidoList, getSigunguList } from "../../api/animalApi";
+import { isSidoAtom, isSigunguAtom } from "../../common/atoms";
+import DatePicker from "../DatePicker";
 
 const SearchGrid = styled.div`
   justify-content: right;
@@ -80,7 +79,6 @@ const itemVariants = {
 };
 export default function AnimalSearch({ objFun }: any) {
   const [isOpen, setIsOpen] = useState(false);
-  const ref = useRef<any>(null);
   const [sidoCode, setSidoCode] = useState("");
   const { data: SData, isLoading: SIsLoading } = useQuery(
     ["sido"],
@@ -136,21 +134,12 @@ export default function AnimalSearch({ objFun }: any) {
     refetch();
   }, [sidoCode, refetch]);
 
-  const handleCloseModal = (event: MouseEvent) => {
-    if (isOpen && (!ref.current || !ref.current.contains(event.target)))
-      setIsOpen(false);
-  };
-
-  useEffect(() => {
-    window.addEventListener("click", handleCloseModal);
-  }, [ref]);
-
   const handleSelector = (event: React.FormEvent<HTMLSelectElement>) => {
     setSidoCode(event.currentTarget.value);
   };
 
   return (
-    <SearchGrid ref={ref}>
+    <SearchGrid>
       <SearchNav initial={false} animate={isOpen ? "open" : "closed"}>
         <SearchBtn
           whileTap={{ scale: 0.97 }}

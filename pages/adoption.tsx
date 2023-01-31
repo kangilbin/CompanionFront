@@ -1,12 +1,14 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import styled from "styled-components";
 import { animalList } from "../api/animalApi";
 import Seo from "../components/Seo";
 import { IGetAbandonedList } from "../api/animalApi";
 import Loader from "./../components/Loader";
-import { dateFormat } from "./../common/utills";
-import AnimalSearch from "../components/AnimalSearch";
 import { useState, useEffect } from "react";
+import { useScroll } from "framer-motion";
+import AnimalCard from "../components/adoption/AnimalCard";
+import AnimalSearch from "./../components/adoption/AnimalSearch";
+import AnimalDetail from "../components/adoption/AnimalDetail";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
@@ -25,45 +27,37 @@ const Box = styled.div`
   gap: 2.5rem;
   margin-top: 1.5rem;
 `;
-const Img = styled.div<{ url: string }>`
-  background-image: url(${(props) => props.url});
-  background-size: cover;
-  cursor: pointer;
-  font-size: 66px;
-  background-size: cover;
-  background-position: center center;
-  width: 100%;
-  aspect-ratio: 1/1;
-  border-radius: 15px 15px 0px 0px;
-`;
-
-const Descript = styled.div`
-  padding: 10px;
-`;
-const DescriptCTT = styled.div`
-  text-align: end;
-  font-weight: bold;
-`;
-const DescriptTTL = styled.div`
-  font-weight: bold;
-  color: ${(props) => props.theme.btnColor};
-`;
-const Item = styled.div`
-  box-shadow: 3px 3px 5px 3px rgb(190 190 190);
-  border-radius: 20px;
-  &:hover {
-    box-shadow: 3px 3px 5px 3px rgb(184 229 240);
-  }
-`;
 
 export default function Adoption() {
   const [obj, setObj] = useState({});
-  const {
-    data: AData,
-    isLoading: AIsLoading,
-    refetch,
-    isFetching,
-  } = useQuery<IGetAbandonedList>(["animals"], () => animalList(obj));
+  const { scrollYProgress } = useScroll();
+
+  const { data, fetchNextPage, isLoading, isFetching, refetch } =
+    useInfiniteQuery<IGetAbandonedList>(
+      ["animals"],
+      ({ pageParam }) => animalList({ ...obj, pageNo: pageParam }),
+      {
+        getNextPageParam: (lastPage) => {
+          if (
+            document.getElementsByClassName("imgBox").length <
+            lastPage.response.body.totalCount
+          ) {
+            return lastPage.response.body.pageNo + 1;
+          } else {
+            return undefined;
+          }
+        },
+        refetchOnWindowFocus: false,
+        staleTime: 5000,
+      }
+    );
+  useEffect(() => {
+    scrollYProgress.onChange(() => {
+      if (scrollYProgress.get() === 1) {
+        fetchNextPage();
+      }
+    });
+  }, [scrollYProgress, fetchNextPage]);
 
   function objFun(obj: any) {
     setObj(obj);
@@ -75,39 +69,20 @@ export default function Adoption() {
   return (
     <Container>
       <Seo title="유기동물s" />
-      {AIsLoading || isFetching ? (
+      {isLoading || isFetching ? (
         <Loader />
       ) : (
-        <Grid>
-          <AnimalSearch objFun={objFun} />
-          <Box>
-            {AData?.response.body.items.item.map((animal, i) => (
-              <Item key={i}>
-                <Img url={animal.popfile} />
-                <Descript>
-                  <div>
-                    <DescriptTTL>접수일</DescriptTTL>
-                    <DescriptCTT>
-                      {dateFormat(
-                        `${animal.happenDt.substring(
-                          0,
-                          4
-                        )}-${animal.happenDt.substring(
-                          4,
-                          6
-                        )}-${animal.happenDt.substring(6, 8)}`
-                      )}
-                    </DescriptCTT>
-                  </div>
-                  <div>
-                    <DescriptTTL>발견장소</DescriptTTL>
-                    <DescriptCTT>{animal.happenPlace}</DescriptCTT>
-                  </div>
-                </Descript>
-              </Item>
-            ))}
-          </Box>
-        </Grid>
+        <>
+          <Grid>
+            <AnimalSearch objFun={objFun} />
+            <Box>
+              {data?.pages.map((page, i) => (
+                <AnimalCard data={page} key={i} />
+              ))}
+            </Box>
+          </Grid>
+          <AnimalDetail />
+        </>
       )}
     </Container>
   );

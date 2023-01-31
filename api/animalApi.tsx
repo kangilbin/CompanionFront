@@ -80,8 +80,6 @@ export async function animalList(obj: any) {
     .then((response) => response.data)
     .catch((error) => {
       console.log("오류 발생", error.status);
-      //   if (error.status === 403) {
-      //   }
     });
 }
 

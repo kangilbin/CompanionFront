@@ -44,16 +44,15 @@ export interface IGetListResult {
   pageInfo?: IPage;
 }
 
-export async function getPopularList() {
+export async function getPopularList(obj: any) {
   return axios
     .get(`${BASE_PATH}/videos`, {
       params: {
         part: "snippet",
         chart: "mostPopular",
         regionCode: "kr",
-        maxResults: 4,
-        videoCategoryId: 15,
         key: API_KEY,
+        ...obj,
       },
     })
     .then((response) => response.data)
@@ -65,18 +64,19 @@ export async function getPopularList() {
       }
     });
 }
-
-export async function getSearchList(token: string = "") {
+export async function getSearchList(obj: any) {
   return axios
-    .get(`${BASE_PATH}/videos`, {
+    .get(`${BASE_PATH}/search`, {
       params: {
         part: "snippet",
-        chart: "mostPopular",
         regionCode: "kr",
         maxResults: 16,
         videoCategoryId: 15,
         key: API_KEY,
-        pageToken: token,
+        //pageToken: token,
+        videoSyndicated: true,
+        type: "video",
+        ...obj,
       },
     })
     .then((response) => response.data)

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useQuery } from "@tanstack/react-query";
 import { getPopularList, IGetListResult } from "../api/youTubeApi";
 import Loader from "./../components/Loader";
-import YouTubeList from "../components/YoutubeList";
+import YouTubeList from "../components/youTube/YoutubeList";
 import { NewsList } from "../api/naverApi";
 import { IGetNewsListResult } from "./../api/naverApi";
 import News from "../components/News";
@@ -85,7 +85,7 @@ const AddBoard = styled.span`
 export default function Main() {
   const { data: vData, isLoading: isVLoading } = useQuery<IGetListResult>(
     ["videos"],
-    getPopularList
+    () => getPopularList({ maxResults: 4, videoCategoryId: 15 })
   );
 
   const { data: nData, isLoading: isNLoading } = useQuery<IGetNewsListResult>(

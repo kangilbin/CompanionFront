@@ -1,10 +1,10 @@
 import YouTube, { YouTubeProps } from "react-youtube";
 import { useRecoilValue } from "recoil";
-import { isVideoAtom } from "../common/atoms";
 import { useEffect, useState } from "react";
-import { elapsedTime } from "./../common/utills";
 import styled from "styled-components";
 import { IoVolumeMuteOutline, IoVolumeMediumOutline } from "react-icons/io5";
+import { isVideoAtom } from "../../common/atoms";
+import { elapsedTime } from "../../common/utills";
 
 const Descript = styled.div`
   padding: 10px;
@@ -16,7 +16,6 @@ const ItemExp = styled.div`
   background-size: cover;
   cursor: pointer;
   font-size: 66px;
-  background-size: cover;
   background-position: center center;
   width: 100%;
   aspect-ratio: 16/9;

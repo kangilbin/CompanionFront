@@ -1,11 +1,11 @@
-import { IGetListResult } from "../api/youTubeApi";
+import { IGetListResult } from "../../api/youTubeApi";
 import styled from "styled-components";
-import { Iimg } from "./../api/youTubeApi";
-import { elapsedTime } from "./../common/utills";
+import { Iimg } from "../../api/youTubeApi";
+import { elapsedTime } from "../../common/utills";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
-import { isVideoAtom } from "./../common/atoms";
+import { isVideoAtom } from "../../common/atoms";
 import YouTubePlay from "./YouTubePlay";
 
 interface IProps {
