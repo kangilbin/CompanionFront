@@ -26,6 +26,10 @@ class MyDocument extends Document {
             href="https://fonts.googleapis.com/css2?family=Jua&family=Dongle&family=Noto+Sans+KR:wght@300&display=swap"
             rel="stylesheet"
           />
+          <meta
+            http-equiv="Content-Security-Policy"
+            content="upgrade-insecure-requests"
+          ></meta>
         </Head>
         <body>
           <Main />
