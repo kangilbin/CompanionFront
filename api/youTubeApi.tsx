@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY_YOUTUBE;
+const API_KEY = "AIzaSyD_PGEEvCjbHMoEBRYtPTxBeXAasWHO6As";
 const BASE_PATH = "https://www.googleapis.com/youtube/v3";
 
 export interface Iimg {
@@ -44,6 +44,24 @@ export interface IGetListResult {
   pageInfo?: IPage;
 }
 
+export interface ISVideo {
+  kind: string;
+  etag: string;
+  id: ISId;
+  snippet: ISnippet;
+}
+interface ISId {
+  kind: string;
+  videoId: string;
+}
+
+export interface IGetSearchResult {
+  kind: string;
+  etag: string;
+  items: ISVideo[];
+  nextPageToken?: string;
+}
+
 export async function getPopularList(obj: any) {
   return axios
     .get(`${BASE_PATH}/videos`, {
@@ -73,7 +91,6 @@ export async function getSearchList(obj: any) {
         maxResults: 16,
         videoCategoryId: 15,
         key: API_KEY,
-        //pageToken: token,
         videoSyndicated: true,
         type: "video",
         ...obj,

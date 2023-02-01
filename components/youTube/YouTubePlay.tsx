@@ -10,6 +10,7 @@ const Descript = styled.div`
   padding: 10px;
   border-radius: 0px 0px 15px 15px;
   background-color: #fff;
+  height: 100%;
 `;
 
 const ItemExp = styled.div`
@@ -56,7 +57,7 @@ export default function YouTubePlay() {
       <ItemExp>
         <YouTube
           className="ifr_youtube"
-          videoId={value?.id}
+          videoId={typeof value.id === "string" ? value.id : value.id.videoId}
           loading="lazy"
           opts={opts}
           iframeClassName="ifr_youtube"

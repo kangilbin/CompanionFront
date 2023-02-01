@@ -66,6 +66,7 @@ export default function Adoption() {
   useEffect(() => {
     refetch();
   }, [obj, refetch]);
+  console.log(isLoading, isFetching);
   return (
     <Container>
       <Seo title="유기동물s" />

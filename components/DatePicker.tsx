@@ -2,7 +2,6 @@ import { Calendar } from "react-calendar";
 import { useState } from "react";
 import moment from "moment";
 import "react-calendar/dist/Calendar.css";
-import { useEffect } from "react";
 import styled from "styled-components";
 
 const InputBox = styled.div`

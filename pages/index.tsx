@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useQuery } from "@tanstack/react-query";
 import { getPopularList, IGetListResult } from "../api/youTubeApi";
 import Loader from "./../components/Loader";
-import YouTubeList from "../components/youTube/YoutubeList";
+import YouTubeList from "../components/youTube/YouTubeList";
 import { NewsList } from "../api/naverApi";
 import { IGetNewsListResult } from "./../api/naverApi";
 import News from "../components/News";

@@ -5,11 +5,13 @@ import {
   getPopularList,
   getSearchList,
   IGetListResult,
+  IGetSearchResult,
 } from "./../api/youTubeApi";
-import YouTubeList from "../components/youTube/YoutubeList";
 import { useScroll, motion, useAnimation } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import Loader from "./../components/Loader";
+import YouTubeList from "./../components/youTube/YouTubeList";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
@@ -57,7 +59,14 @@ interface IForm {
 export default function Video() {
   const { scrollYProgress } = useScroll();
   const [keyword, setKeyword] = useState<string>();
-  const { data, fetchNextPage } = useInfiniteQuery<IGetListResult>(
+  const {
+    data,
+    fetchNextPage,
+    refetch,
+    isLoading,
+    isFetching,
+    isFetchingNextPage,
+  } = useInfiniteQuery<IGetListResult | IGetSearchResult>(
     ["videosPage"],
     ({ pageParam }) =>
       !!keyword
@@ -77,21 +86,6 @@ export default function Video() {
     }
   );
 
-  // const {
-  //   data: searchData,
-  //   fetchNextPage: searchNextPage,
-  //   isFetching,
-  //   refetch,
-  // } = useInfiniteQuery<IGetListResult>(
-  //   ["searchPage", keyword],
-  //   ({ pageParam }) => getSearchList({ pageToken: pageParam, q: keyword }),
-  //   {
-  //     getNextPageParam: (lastPage) => lastPage.nextPageToken,
-  //     enabled: !!keyword,
-  //     //refetchOnWindowFocus: false,
-  //     //staleTime: 5000,
-  //   }
-  // );
   useEffect(() => {
     scrollYProgress.onChange(() => {
       if (scrollYProgress.get() === 1) {
@@ -105,14 +99,11 @@ export default function Video() {
   const { register, handleSubmit } = useForm<IForm>();
   const onVaild = (data: IForm) => {
     setKeyword(data.keyword);
-    console.log(1);
-    //navigate(`/search?keyowrd=${data.keyword}`);
   };
 
-  // useEffect(() => {
-  //   refetch();
-  //   console.log(2);
-  // }, [keyword, refetch]);
+  useEffect(() => {
+    refetch();
+  }, [keyword, refetch]);
 
   const toggleSearch = () => {
     if (searchOpen) {
@@ -126,37 +117,43 @@ export default function Video() {
   return (
     <Container id="ctn">
       <Seo title="영상s" />
-      <Grid>
-        <div style={{ gridColumn: "span 4" }}>
-          <Search onSubmit={handleSubmit(onVaild)}>
-            <motion.svg
-              onClick={toggleSearch}
-              animate={{ x: searchOpen ? -215 : 0 }}
-              transition={{ type: "linear" }} // 1) 2개의 다른 animate를 선형적으로 만들어준다.
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-              style={{ zIndex: "2" }}
-            >
-              <path
-                fillRule="evenodd"
-                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                clipRule="evenodd"
-              />
-            </motion.svg>
-            <Input
-              {...register("keyword", { required: true, minLength: 2 })}
-              transition={{ type: "linear" }} // 2) 2개의 다른 animate를 선형적으로 만들어준다.
-              initial={{ scaleX: 0 }}
-              animate={inputAnimation}
-              placeholder="Search for movie or tv show..."
-            />
-          </Search>
-          {data?.pages.map((page, i) => (
-            <YouTubeList key={i} data={page} />
-          ))}
-        </div>
-      </Grid>
+      {isLoading || isFetching ? (
+        <Loader />
+      ) : (
+        <>
+          <Grid>
+            <div style={{ gridColumn: "span 4" }}>
+              <Search onSubmit={handleSubmit(onVaild)}>
+                <motion.svg
+                  onClick={toggleSearch}
+                  animate={{ x: searchOpen ? -215 : 0 }}
+                  transition={{ type: "linear" }}
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style={{ zIndex: "2" }}
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                    clipRule="evenodd"
+                  />
+                </motion.svg>
+                <Input
+                  {...register("keyword", { required: false })}
+                  transition={{ type: "linear" }}
+                  initial={{ scaleX: 0 }}
+                  animate={inputAnimation}
+                  placeholder="Search..."
+                />
+              </Search>
+              {data?.pages.map((page, i) => (
+                <YouTubeList key={i} data={page} />
+              ))}
+            </div>
+          </Grid>
+        </>
+      )}
     </Container>
   );
 }

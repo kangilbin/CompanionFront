@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const BASE_PATH = "http://apis.data.go.kr/1543061/abandonmentPublicSrvc";
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY_ABANDONED;
+const API_KEY =
+  "OTU506bETKVTEyitrjVrR/g0Av3kiXrfVkx8HUICvhIWC8vGxg/iSbIQVU5mvw7Isc7FKQT9XSHl42xMsZIJyw==";
 
 export interface IGetAbandonedList {
   response: IResponse;

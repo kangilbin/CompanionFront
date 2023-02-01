@@ -1,15 +1,15 @@
-import { IGetListResult } from "../../api/youTubeApi";
+import { IGetListResult, IGetSearchResult } from "../../api/youTubeApi";
 import styled from "styled-components";
 import { Iimg } from "../../api/youTubeApi";
 import { elapsedTime } from "../../common/utills";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { useRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { isVideoAtom } from "../../common/atoms";
 import YouTubePlay from "./YouTubePlay";
 
 interface IProps {
-  data?: IGetListResult;
+  data?: IGetListResult | IGetSearchResult;
 }
 
 const Descript = styled.div`
@@ -58,6 +58,7 @@ const Video = styled(motion.div)<ITaget>`
   border-radius: 20px;
   background-color: black;
   transform-origin: center;
+  overflow: hidden;
 `;
 
 interface ITaget {
@@ -71,7 +72,7 @@ export default function YouTubeList({ data }: IProps) {
   const [showing, setShowing] = useState(false);
   const [timer, setTimer] = useState<NodeJS.Timeout>();
   const [targetSize, setTargetSize] = useState<ITaget>();
-  const [isPlaying, setPlaying] = useRecoilState(isVideoAtom);
+  const setPlaying = useSetRecoilState(isVideoAtom);
 
   const targetFind = (id: string) => {
     const target = document.getElementById(id);
@@ -99,11 +100,13 @@ export default function YouTubeList({ data }: IProps) {
     <Container>
       {data?.items.map((video) => (
         <Grid
-          id={video.id}
-          key={video.id}
+          id={typeof video.id === "string" ? video.id : video.id.videoId}
+          key={typeof video.id === "string" ? video.id : video.id.videoId}
           onHoverStart={() => {
             const time = setTimeout(() => {
-              targetFind(video.id);
+              targetFind(
+                typeof video.id === "string" ? video.id : video.id.videoId
+              );
               setPlaying(video);
             }, 1000);
             setTimer(time);
@@ -113,7 +116,7 @@ export default function YouTubeList({ data }: IProps) {
             setShowing(false);
           }}
         >
-          <Item {...video.snippet.thumbnails.standard} />
+          <Item {...video.snippet.thumbnails.high} />
           <Descript>
             <div
               style={{

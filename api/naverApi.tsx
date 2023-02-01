@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const CLINET_ID = process.env.NEXT_PUBLIC_API_KEY_NAVER_ID;
-const CLINET_PW = process.env.NEXT_PUBLIC_API_KEY_NAVER_PW;
+const CLINET_ID = "hfx8qYMy8pAJzltrE2pE";
+const CLINET_PW = "WCBDc5gmp6";
 const BASE_PATH = "/v1/search/news.json?";
 
 interface INews {

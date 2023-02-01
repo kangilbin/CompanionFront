@@ -60,15 +60,20 @@ export default function AnimalDetail() {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const isAnimal = useRecoilValue(isAnimalAtom);
+  const resetList = useResetRecoilState(isAnimalAtom);
+
   const outSideClick = (event: React.FormEvent<HTMLDivElement>) => {
     if (!ref.current || !ref.current.contains(event.currentTarget)) {
       setIsOpen(false);
     }
   };
   useEffect(() => {
-    setIsOpen(isAnimal !== undefined);
+    setIsOpen(!!isAnimal?.desertionNo);
   }, [isAnimal]);
 
+  useEffect(() => {
+    if (!isOpen) resetList();
+  }, [isOpen, resetList]);
   return (
     <AnimatePresence>
       {isOpen && (
@@ -154,8 +159,6 @@ export default function AnimalDetail() {
                   <SubCTT>
                     <SubCTT>
                       {moment(isAnimal?.noticeSdt).format("YYYY. MM. DD")} ~
-                    </SubCTT>
-                    <SubCTT>
                       {moment(isAnimal?.noticeEdt).format("YYYY. MM. DD")}
                     </SubCTT>
                   </SubCTT>

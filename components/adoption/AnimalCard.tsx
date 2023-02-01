@@ -43,18 +43,13 @@ interface IProps {
 
 export default function AnimalCard({ data }: IProps) {
   const setAnimal = useSetRecoilState(isAnimalAtom);
-  const [info, setInfo] = useState<IItem>();
-
-  useEffect(() => {
-    setAnimal(info);
-  }, [info, setAnimal]);
 
   return (
     <>
       {data?.response.body.items.item.map((animal, j) => (
         <Item
           key={j}
-          onClick={() => setInfo(animal)}
+          onClick={() => setAnimal(animal)}
           layoutId={animal.desertionNo}
         >
           <Img url={animal.popfile} />
