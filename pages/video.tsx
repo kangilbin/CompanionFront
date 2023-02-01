@@ -11,7 +11,7 @@ import { useScroll, motion, useAnimation } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Loader from "./../components/Loader";
-import YouTubeList from "./../components/youTube/YouTubeList";
+import YouTubeList from "../components/youTube/YouTubeList";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
