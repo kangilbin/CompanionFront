@@ -107,10 +107,10 @@ export default function NavBar() {
           {router.pathname === "/" && <Line layoutId="line" />}
         </Page>
       </Link>
-      <Link href="/video" legacyBehavior>
+      <Link href="/videos" legacyBehavior>
         <Page variants={tabVariants} whileHover="hover" whileTap="click">
-          <Text isActive={router.pathname === "/video"}>영상</Text>
-          {router.pathname === "/video" && <Line layoutId="line" />}
+          <Text isActive={router.pathname === "/videos"}>영상</Text>
+          {router.pathname === "/videos" && <Line layoutId="line" />}
         </Page>
       </Link>
       <Link href="/community" legacyBehavior>

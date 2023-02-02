@@ -28,7 +28,6 @@ export default function YouTubePlay() {
   const [target, setTarget] = useState<any>();
   const [volume, setVolume] = useState(false);
 
-  useEffect(() => {}, [value]);
   const onPlayerReady: YouTubeProps["onReady"] = (event) => {
     // 동영상 로드 후 이벤트 설정
     event.target.mute();

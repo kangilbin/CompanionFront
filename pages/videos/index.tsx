@@ -1,4 +1,4 @@
-import Seo from "./../components/Seo";
+import Seo from "../../components/Seo";
 import styled from "styled-components";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
@@ -6,12 +6,12 @@ import {
   getSearchList,
   IGetListResult,
   IGetSearchResult,
-} from "./../api/youTubeApi";
+} from "../../api/youTubeApi";
 import { useScroll, motion, useAnimation } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import Loader from "./../components/Loader";
-import YouTubeList from "../components/youTube/YouTubeList";
+import Loader from "../../components/Loader";
+import YouTubeList from "../../components/youTube/YouTubeList";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
@@ -59,32 +59,26 @@ interface IForm {
 export default function Video() {
   const { scrollYProgress } = useScroll();
   const [keyword, setKeyword] = useState<string>();
-  const {
-    data,
-    fetchNextPage,
-    refetch,
-    isLoading,
-    isFetching,
-    isFetchingNextPage,
-  } = useInfiniteQuery<IGetListResult | IGetSearchResult>(
-    ["videosPage"],
-    ({ pageParam }) =>
-      !!keyword
-        ? getSearchList({
-            q: keyword,
-            pageToken: pageParam,
-          })
-        : getPopularList({
-            maxResults: 16,
-            videoCategoryId: 15,
-            pageToken: pageParam,
-          }),
-    {
-      getNextPageParam: (lastPage) => lastPage.nextPageToken,
-      refetchOnWindowFocus: false,
-      staleTime: 5000,
-    }
-  );
+  const { data, fetchNextPage, refetch, isLoading, isFetching } =
+    useInfiniteQuery<IGetListResult | IGetSearchResult>(
+      ["videosPage"],
+      ({ pageParam }) =>
+        !!keyword
+          ? getSearchList({
+              q: keyword,
+              pageToken: pageParam,
+            })
+          : getPopularList({
+              maxResults: 16,
+              videoCategoryId: 15,
+              pageToken: pageParam,
+            }),
+      {
+        getNextPageParam: (lastPage) => lastPage.nextPageToken,
+        refetchOnWindowFocus: false,
+        staleTime: 5000,
+      }
+    );
 
   useEffect(() => {
     scrollYProgress.onChange(() => {

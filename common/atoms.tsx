@@ -1,8 +1,7 @@
-import { atom, selector } from "recoil";
+import { atom } from "recoil";
 import { ISVideo, IVideo } from "../api/youTubeApi";
 import { IDItems, IItem, ISItems } from "../api/animalApi";
 
-// 빌드되는 과정에서 재선언 되어 중복 오류가 발생한다. uuid모듈을 활용하여 중복을 방지
 export const isVideoAtom = atom<IVideo | ISVideo>({
   key: "isVideo",
   default: {

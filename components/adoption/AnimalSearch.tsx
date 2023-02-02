@@ -85,13 +85,13 @@ export default function AnimalSearch({ objFun }: any) {
     getSidoList,
     { cacheTime: Infinity }
   );
-  const {
-    data: GData,
-    isLoading: GisLoading,
-    refetch,
-  } = useQuery(["sigungu"], () => getSigunguList(sidoCode), {
-    enabled: false,
-  });
+  const { data: GData, refetch } = useQuery(
+    ["sigungu"],
+    () => getSigunguList(sidoCode),
+    {
+      enabled: false,
+    }
+  );
   const [sido, setSido] = useRecoilState(isSidoAtom);
   const [sigungu, setSigungu] = useRecoilState(isSigunguAtom);
 

@@ -7,6 +7,8 @@ import { useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { isVideoAtom } from "../../common/atoms";
 import YouTubePlay from "./YouTubePlay";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 interface IProps {
   data?: IGetListResult | IGetSearchResult;
@@ -20,9 +22,10 @@ const Descript = styled.div`
 
 const Container = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
   margin-top: 1.5rem;
+  padding: 0px 25px 0px 25px;
 `;
 
 const Item = styled.div<Iimg>`
@@ -73,6 +76,7 @@ export default function YouTubeList({ data }: IProps) {
   const [timer, setTimer] = useState<NodeJS.Timeout>();
   const [targetSize, setTargetSize] = useState<ITaget>();
   const setPlaying = useSetRecoilState(isVideoAtom);
+  const router = useRouter();
 
   const targetFind = (id: string) => {
     const target = document.getElementById(id);
@@ -114,6 +118,10 @@ export default function YouTubeList({ data }: IProps) {
           onHoverEnd={() => {
             clearTimeout(timer);
             setShowing(false);
+          }}
+          onClick={() => {
+            setPlaying(video);
+            router.push("/videos/detail");
           }}
         >
           <Item {...video.snippet.thumbnails.high} />
