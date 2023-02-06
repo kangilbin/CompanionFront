@@ -1,7 +1,11 @@
 import Link from "next/link";
 import styled from "styled-components";
-import { motion } from "framer-motion";
+import { motion, useCycle, useScroll } from "framer-motion";
 import { useRouter } from "next/router";
+import { UserNav } from "./userMenu/UserNav";
+import { useRef, useEffect, useState } from "react";
+import MenuToggle from "./userMenu/MenuToggle";
+import { FiUserCheck } from "react-icons/fi";
 
 const Menu = styled.nav`
   display: grid;
@@ -18,6 +22,7 @@ const Page = styled(motion.a)`
   font-weight: bold;
   display: grid;
   grid-template-rows: 1fr;
+  z-index: 1;
 `;
 
 const Text = styled.div<{ isActive: boolean }>`
@@ -83,8 +88,77 @@ const SubPage = styled.a`
     color: #a39595;
   }
 `;
+
+const Nav = styled(motion.nav)<{ height: number }>`
+  position: absolute;
+  top: ${(props) => props.height}px;
+  right: 0;
+  bottom: 0;
+  width: 300px;
+  height: 100%;
+`;
+
+const NavBackGround = styled(motion.div)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 300px;
+  background-color: #e0e6e7;
+  box-shadow: rgb(190 190 190) 3px 3px 5px 3px;
+`;
+
+const sidebar = {
+  open: (height = 1000) => ({
+    clipPath: `circle(${height * 2 + 200}px at 258px 180px)`,
+    transition: {
+      type: "spring",
+      stiffness: 20,
+      restDelta: 2,
+    },
+  }),
+  closed: {
+    clipPath: "circle(30px at 258px 180px)",
+    transition: {
+      delay: 0.5,
+      type: "spring",
+      stiffness: 400,
+      damping: 40,
+    },
+  },
+};
+
+const sidebar1 = {
+  open: {
+    zIndex: "1",
+    transition: {
+      type: "spring",
+      stiffness: 20,
+      restDelta: 2,
+    },
+  },
+  closed: {
+    zIndex: "0",
+    transition: {
+      delay: 1,
+      type: "spring",
+      stiffness: 400,
+      damping: 40,
+    },
+  },
+};
 export default function NavBar() {
   const router = useRouter();
+  const [isOpen, toggleOpen] = useCycle(false, true);
+  const containerRef = useRef(null);
+  const { scrollY } = useScroll();
+  const [top, setTop] = useState(scrollY.get());
+  useEffect(() => {
+    scrollY.onChange(() => {
+      setTop(scrollY.get());
+    });
+  }, [scrollY]);
+
   return (
     <Menu>
       <Link href="/" legacyBehavior>
@@ -130,6 +204,19 @@ export default function NavBar() {
           <SubPage>유기동물</SubPage>
         </Link>
       </SubTab>
+
+      <Nav
+        initial={false}
+        variants={sidebar1}
+        animate={isOpen ? "open" : "closed"}
+        ref={containerRef}
+        height={top}
+      >
+        <NavBackGround variants={sidebar} />
+
+        <UserNav />
+        <MenuToggle toggle={() => toggleOpen()} isOpen={isOpen} />
+      </Nav>
     </Menu>
   );
 }

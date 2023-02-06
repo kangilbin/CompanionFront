@@ -69,7 +69,7 @@ export default function Adoption() {
   return (
     <Container>
       <Seo title="유기동물s" />
-      {isLoading || isFetching ? (
+      {isLoading ? (
         <Loader />
       ) : (
         <>

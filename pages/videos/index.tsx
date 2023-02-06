@@ -111,7 +111,7 @@ export default function Video() {
   return (
     <Container id="ctn">
       <Seo title="영상s" />
-      {isLoading || isFetching ? (
+      {isLoading ? (
         <Loader />
       ) : (
         <>

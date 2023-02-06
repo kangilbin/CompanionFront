@@ -105,7 +105,7 @@ export default function Main() {
               <SubText>
                 <span>Best 영상</span>
                 <Link
-                  href="/video"
+                  href="/videos"
                   style={{ textDecorationLine: "blink", color: "black" }}
                 >
                   <AddBoard>더보기</AddBoard>
