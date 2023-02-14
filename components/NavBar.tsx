@@ -197,7 +197,7 @@ export default function NavBar() {
         </Link>
       </SubTab>
 
-      <Nav
+      {/* <Nav
         initial={false}
         variants={sidebar1}
         animate={isOpen ? "open" : "closed"}
@@ -207,7 +207,7 @@ export default function NavBar() {
 
         <UserNav />
         <MenuToggle toggle={() => toggleOpen()} isOpen={isOpen} />
-      </Nav>
+      </Nav> */}
     </Menu>
   );
 }
