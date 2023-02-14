@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import Seo from "../components/Seo";
 import Link from "next/link";
-import { BsSearch, BsSortDown, BsPen } from "react-icons/Bs";
+import { SlPencil } from "react-icons/sl";
+import { HiSearch, HiSortDescending } from "react-icons/hi";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
@@ -95,18 +96,18 @@ export default function Community() {
       <GridHead>
         <Link href="/" legacyBehavior>
           <Page>
-            <BsPen style={{ marginRight: "5px" }} />
+            <SlPencil style={{ marginRight: "5px" }} />
             작성하기
           </Page>
         </Link>
         <span style={{ fontFamily: "Jua" }}>커뮤니티</span>
         <Sort>
-          <BsSortDown style={{ marginRight: "5px" }} />
+          <HiSortDescending style={{ marginRight: "5px" }} />
           <span>최신순</span>
         </Sort>
       </GridHead>
       <GridSearch>
-        <BsSearch className="searchIcon" />
+        <HiSearch className="searchIcon" />
         <Input type="text" placeholder="Search" />
       </GridSearch>
       <GridBody>
