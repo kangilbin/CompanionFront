@@ -8,7 +8,6 @@ import { useSetRecoilState } from "recoil";
 import { isVideoAtom } from "../../common/atoms";
 import YouTubePlay from "./YouTubePlay";
 import { useRouter } from "next/router";
-import Link from "next/link";
 
 interface IProps {
   data?: IGetListResult | IGetSearchResult;

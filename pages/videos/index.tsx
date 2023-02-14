@@ -59,26 +59,27 @@ interface IForm {
 export default function Video() {
   const { scrollYProgress } = useScroll();
   const [keyword, setKeyword] = useState<string>();
-  const { data, fetchNextPage, refetch, isLoading, isFetching } =
-    useInfiniteQuery<IGetListResult | IGetSearchResult>(
-      ["videosPage"],
-      ({ pageParam }) =>
-        !!keyword
-          ? getSearchList({
-              q: keyword,
-              pageToken: pageParam,
-            })
-          : getPopularList({
-              maxResults: 16,
-              videoCategoryId: 15,
-              pageToken: pageParam,
-            }),
-      {
-        getNextPageParam: (lastPage) => lastPage.nextPageToken,
-        refetchOnWindowFocus: false,
-        staleTime: 5000,
-      }
-    );
+  const { data, fetchNextPage, refetch, isLoading } = useInfiniteQuery<
+    IGetListResult | IGetSearchResult
+  >(
+    ["videosPage"],
+    ({ pageParam }) =>
+      !!keyword
+        ? getSearchList({
+            q: encodeURIComponent(keyword),
+            pageToken: pageParam,
+          })
+        : getPopularList({
+            maxResults: 16,
+            videoCategoryId: 15,
+            pageToken: pageParam,
+          }),
+    {
+      getNextPageParam: (lastPage) => lastPage.nextPageToken,
+      refetchOnWindowFocus: false,
+      staleTime: 5000,
+    }
+  );
 
   useEffect(() => {
     scrollYProgress.onChange(() => {

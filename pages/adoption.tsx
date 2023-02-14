@@ -32,10 +32,11 @@ export default function Adoption() {
   const [obj, setObj] = useState({});
   const { scrollYProgress } = useScroll();
 
-  const { data, fetchNextPage, isLoading, isFetching, refetch } =
+  const { data, fetchNextPage, isLoading, refetch } =
     useInfiniteQuery<IGetAbandonedList>(
       ["animals"],
-      ({ pageParam }) => animalList({ ...obj, pageNo: pageParam }),
+      ({ pageParam }) =>
+        animalList({ ...obj, pageNo: pageParam ? pageParam : 1 }),
       {
         getNextPageParam: (lastPage) => {
           if (

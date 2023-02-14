@@ -5,7 +5,8 @@ const nextConfig = {
     return [
       {
         source: "/:path*",
-        destination: "https://openapi.naver.com/:path*",
+        destination:
+          "https://port-0-companionback-1b5xkk2fldd606lq.gksl2.cloudtype.app/:path*",
       },
     ];
   },

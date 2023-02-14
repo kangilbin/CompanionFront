@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const API_KEY = "AIzaSyD_PGEEvCjbHMoEBRYtPTxBeXAasWHO6As";
-const BASE_PATH = "https://www.googleapis.com/youtube/v3";
+const BASE_PATH = "/api/youtube";
 
 export interface Iimg {
   url: string;
@@ -64,43 +63,35 @@ export interface IGetSearchResult {
 
 export async function getPopularList(obj: any) {
   return axios
-    .get(`${BASE_PATH}/videos`, {
-      params: {
-        part: "snippet",
-        chart: "mostPopular",
-        regionCode: "kr",
-        key: API_KEY,
-        ...obj,
-      },
+    .post(`${BASE_PATH}/videos`, {
+      part: "snippet",
+      chart: "mostPopular",
+      regionCode: "kr",
+      ...obj,
     })
     .then((response) => response.data)
     .catch((error) => {
-      console.log(error.status);
-      // catch 부분은 추후 에러 페이지 추가 후 해당 페이지로 이동
-      if (error.status === 403) {
+      console.log(error.response.status);
+      if (error.response.status === 404) {
         //window.location.href = "/404";
       }
     });
 }
 export async function getSearchList(obj: any) {
   return axios
-    .get(`${BASE_PATH}/search`, {
-      params: {
-        part: "snippet",
-        regionCode: "kr",
-        maxResults: 16,
-        videoCategoryId: 15,
-        key: API_KEY,
-        videoSyndicated: true,
-        type: "video",
-        ...obj,
-      },
+    .post(`${BASE_PATH}/search`, {
+      part: "snippet",
+      regionCode: "kr",
+      maxResults: 16,
+      videoCategoryId: 15,
+      videoSyndicated: true,
+      type: "video",
+      ...obj,
     })
     .then((response) => response.data)
     .catch((error) => {
-      console.log(error.status);
-      // catch 부분은 추후 에러 페이지 추가 후 해당 페이지로 이동
-      if (error.status === 403) {
+      console.log(error.response.status);
+      if (error.response.status === 404) {
         //window.location.href = "/404";
       }
     });

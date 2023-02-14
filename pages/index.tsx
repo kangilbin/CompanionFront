@@ -85,12 +85,14 @@ const AddBoard = styled.span`
 export default function Main() {
   const { data: vData, isLoading: isVLoading } = useQuery<IGetListResult>(
     ["videos"],
-    () => getPopularList({ maxResults: 4, videoCategoryId: 15 })
+    () => getPopularList({ maxResults: 4, videoCategoryId: 15 }),
+    { refetchOnWindowFocus: false, staleTime: 5000 }
   );
 
   const { data: nData, isLoading: isNLoading } = useQuery<IGetNewsListResult>(
     ["news"],
-    NewsList
+    NewsList,
+    { refetchOnWindowFocus: false, staleTime: 5000 }
   );
 
   return (

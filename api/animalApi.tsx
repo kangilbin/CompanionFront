@@ -1,8 +1,6 @@
 import axios from "axios";
 
-const BASE_PATH = "http://apis.data.go.kr/1543061/abandonmentPublicSrvc";
-const API_KEY =
-  "OTU506bETKVTEyitrjVrR/g0Av3kiXrfVkx8HUICvhIWC8vGxg/iSbIQVU5mvw7Isc7FKQT9XSHl42xMsZIJyw==";
+const BASE_PATH = "/api/animal";
 
 export interface IGetAbandonedList {
   response: IResponse;
@@ -70,15 +68,14 @@ export interface IItem {
 
 export async function animalList(obj: any) {
   return axios
-    .get(`${BASE_PATH}/abandonmentPublic`, {
-      params: {
-        serviceKey: API_KEY,
-        numOfRows: 16,
-        _type: "json",
-        ...obj,
-      },
+    .post(`${BASE_PATH}/abandonmentPublic`, {
+      numOfRows: 16,
+      _type: "json",
+      ...obj,
     })
-    .then((response) => response.data)
+    .then((response) => {
+      return response.data;
+    })
     .catch((error) => {
       console.log("오류 발생", error.status);
     });
@@ -88,7 +85,6 @@ export async function getSidoList() {
   return axios
     .get(`${BASE_PATH}/sido`, {
       params: {
-        serviceKey: API_KEY,
         numOfRows: 100,
         _type: "json",
       },
@@ -103,7 +99,6 @@ export async function getSigunguList(code: string) {
   return axios
     .get(`${BASE_PATH}/sigungu`, {
       params: {
-        serviceKey: API_KEY,
         upr_cd: code,
         _type: "json",
       },

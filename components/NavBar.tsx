@@ -89,9 +89,8 @@ const SubPage = styled.a`
   }
 `;
 
-const Nav = styled(motion.nav)<{ height: number }>`
+const Nav = styled(motion.nav)`
   position: absolute;
-  top: ${(props) => props.height}px;
   right: 0;
   bottom: 0;
   width: 300px;
@@ -152,13 +151,6 @@ export default function NavBar() {
   const [isOpen, toggleOpen] = useCycle(false, true);
   const containerRef = useRef(null);
   const { scrollY } = useScroll();
-  const [top, setTop] = useState(scrollY.get());
-  useEffect(() => {
-    scrollY.onChange(() => {
-      setTop(scrollY.get());
-    });
-  }, [scrollY]);
-
   return (
     <Menu>
       <Link href="/" legacyBehavior>
@@ -210,7 +202,6 @@ export default function NavBar() {
         variants={sidebar1}
         animate={isOpen ? "open" : "closed"}
         ref={containerRef}
-        height={top}
       >
         <NavBackGround variants={sidebar} />
 
