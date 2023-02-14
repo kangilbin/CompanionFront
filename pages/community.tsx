@@ -1,8 +1,7 @@
 import styled from "styled-components";
 import Seo from "../components/Seo";
 import Link from "next/link";
-import { SlPencil } from "react-icons/sl";
-import { BsSearch, BsSortDown } from "react-icons/Bs";
+import { BsSearch, BsSortDown, BsPen } from "react-icons/Bs";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
@@ -96,7 +95,7 @@ export default function Community() {
       <GridHead>
         <Link href="/" legacyBehavior>
           <Page>
-            <SlPencil style={{ marginRight: "5px" }} />
+            <BsPen style={{ marginRight: "5px" }} />
             작성하기
           </Page>
         </Link>
