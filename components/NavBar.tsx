@@ -22,7 +22,6 @@ const Page = styled(motion.a)`
   font-weight: bold;
   display: grid;
   grid-template-rows: 1fr;
-  z-index: 1;
 `;
 
 const Text = styled.div<{ isActive: boolean }>`
@@ -149,7 +148,6 @@ const sidebar1 = {
 export default function NavBar() {
   const router = useRouter();
   const [isOpen, toggleOpen] = useCycle(false, true);
-  const containerRef = useRef(null);
   const { scrollY } = useScroll();
   return (
     <Menu>

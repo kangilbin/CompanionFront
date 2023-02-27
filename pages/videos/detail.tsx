@@ -1,7 +1,5 @@
-import { useRouter, NextRouter } from "next/router";
 import YouTube, { YouTubeProps } from "react-youtube";
 import { useRecoilValue } from "recoil";
-import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { isVideoAtom } from "../../common/atoms";
 import { elapsedTime } from "../../common/utills";
