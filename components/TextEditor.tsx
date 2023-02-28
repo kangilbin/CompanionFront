@@ -65,6 +65,7 @@ const Save = styled.button`
   color: white;
   font-family: "Noto Sans KR";
   margin-top: 100px;
+  float: right;
   &:hover {
     background-color: #00c3ff;
   }
