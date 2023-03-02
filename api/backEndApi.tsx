@@ -7,10 +7,28 @@ export async function communityWrite(param: any) {
     .post(`${BASE_PATH}/community/write`, {
       ...param,
     })
-    .then((response) => response.data)
+    .then((response) => {
+      if (response.data) {
+        alert("작성 완료");
+        window.location.href = "/community";
+      }
+    })
     .catch((error) => {
       console.log("오류 발생", error.response.status);
-      // catch 부분은 추후 에러 페이지 추가 후 해당 페이지로 이동
+      if (error.response.status === 404) {
+        //window.location.href = "/404";
+      }
+    });
+}
+
+export async function communtiyList() {
+  return axios
+    .get(`${BASE_PATH}/community/list`)
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.log("오류 발생 : ", error.response.status);
       if (error.response.status === 404) {
         //window.location.href = "/404";
       }

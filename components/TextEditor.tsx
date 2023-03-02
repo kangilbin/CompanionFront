@@ -4,13 +4,9 @@ import { useState, useMemo, useRef } from "react";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
 import moment from "moment";
-import { storage } from "../common/Firebase";
-import {
-  ref,
-  uploadString,
-  getDownloadURL,
-  uploadBytes,
-} from "firebase/storage";
+import { storage } from "../common/firebase";
+import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
+import { communityWrite } from "../api/backEndApi";
 
 const ReactQuill = dynamic(
   async () => {
@@ -63,14 +59,9 @@ const Save = styled.button`
   }
 `;
 
-interface QuilFileProps {
-  base64: string;
-  file: File;
-}
-
 export default function TextEditor() {
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [dom, setDom] = useState("");
   const { register, handleSubmit } = useForm();
 
   const quillRef = useRef<any>();
@@ -80,7 +71,6 @@ export default function TextEditor() {
 
     input.setAttribute("type", "file");
     input.setAttribute("accept", "image/*");
-    //document.body.appendChild(input);
 
     input.click();
 
@@ -105,90 +95,41 @@ export default function TextEditor() {
           )
         );
       });
-
-      // fileReader.onload = (event: any) => {
-      //   const baseData: string = event.target.result;
-      //   quillRef.current?.editor?.insertEmbed(
-      //     quillRef.current.getEditor().getSelection().index,
-      //     "image",
-      //     baseData
-      //   );
-      //   setQuillFile((prev: QuilFileProps[]) => [
-      //     ...prev,
-      //     { base64: baseData, file: file },
-      //   ]);
-      // };
-      // fileReader.readAsDataURL(file);
     };
   };
-
-  // const quilImageTagArr = useMemo(() => {
-  //   const result = Array.from(
-  //     content.matchAll(/<img[^>]+src=["']([^'">]+)['"]/gi)
-  //   );
-  //   return result.map((item) => item.pop() || "");
-  // }, [content]);
-
-  // useEffect(() => {
-  //   const changeResultFiles = quillFile?.filter(
-  //     (item) => quilImageTagArr.includes(item.base64) && item
-  //   );
-  //   if (changeResultFiles.length !== quillFile.length) {
-  //     setQuillFile(changeResultFiles);
-  //   }
-  // }, [quilImageTagArr, quillFile]);
 
   const modules = useMemo(
     () => ({
       toolbar: {
         container: [
-          [{ header: [1, 2, false] }],
           ["bold", "italic", "underline", "strike", "blockquote"],
+          [{ size: ["small", false, "large", "huge"] }, { color: [] }],
           [
             { list: "ordered" },
             { list: "bullet" },
             { indent: "-1" },
             { indent: "+1" },
+            { align: [] },
           ],
-          ["link", "image"],
-          ["clean"],
+          ["image", "video"],
         ],
-        handlers: { image: imageHandler },
+        handlers: {
+          image: imageHandler,
+        },
       },
     }),
     []
   );
 
   const onValid = () => {
-    const path =
-      "images/community/" +
-      new Date().getFullYear() +
-      "년/" +
-      (new Date().getMonth() + 1) +
-      "월/";
-    const fileNm = moment().format("YYYYhmmss") + "_jacob";
-    const storageRef = ref(storage, path + fileNm);
-
     const requestObj = {
-      id: "",
-      time: moment().format("YYYYMMDDHHmmss"),
+      id: moment().format("YYYYMMDDHHmmss"),
+      user_id: "jacob",
       title: title,
-      content: content,
+      content: quillRef.current?.editor.getText(),
+      dom: dom,
     };
-    content.replace(/data:([^'">]+)/g, (match) => {
-      let url = "";
-      uploadString(storageRef, match.split(",")[1], "base64", {
-        contentType: "image/jpg",
-      })
-        .then((snapshot) => {
-          getDownloadURL(snapshot.ref).then((downUrl) => (url = downUrl));
-        })
-        .catch((error) => {
-          alert(error + " : 이미지 저장 오류 발생.");
-        });
-      return url;
-    });
-    //communityWrite(requestObj);
+    communityWrite(requestObj);
   };
 
   return (
@@ -204,10 +145,10 @@ export default function TextEditor() {
         modules={modules}
         formats={formats}
         theme="snow"
-        style={{ height: "80%" }}
-        onChange={setContent}
+        style={{ height: "90%" }}
+        onChange={setDom}
       />
-      <Save style={{}}>완료</Save>
+      <Save>완료</Save>
     </form>
   );
 }

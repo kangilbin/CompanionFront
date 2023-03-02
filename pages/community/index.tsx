@@ -3,6 +3,9 @@ import Link from "next/link";
 import { SlPencil } from "react-icons/sl";
 import { HiSearch, HiSortDescending } from "react-icons/hi";
 import Seo from "./../../components/Seo";
+import { useQuery } from "@tanstack/react-query";
+import { communtiyList } from "../../api/backEndApi";
+import Loader from "./../../components/Loader";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
@@ -92,118 +95,126 @@ const Grid = styled.div`
 `;
 
 export default function Community() {
+  const { isLoading, data } = useQuery(["community_list"], communtiyList, {
+    refetchOnWindowFocus: false,
+  });
+  console.log(data);
   return (
     <Container>
       <Seo title="간택당한 집사s" />
-      <Grid>
-        <GridHead>
-          <Link href="/community/write" legacyBehavior>
-            <Page>
-              <SlPencil style={{ marginRight: "5px" }} />
-              작성하기
-            </Page>
-          </Link>
-          <span style={{ fontFamily: "Jua" }}>커뮤니티</span>
-          <Sort>
-            <HiSortDescending style={{ marginRight: "5px" }} />
-            <span>최신순</span>
-          </Sort>
-        </GridHead>
-        <GridSearch>
-          <HiSearch className="searchIcon" />
-          <Input type="text" placeholder="Search" />
-        </GridSearch>
-        <GridBody>
-          <Card className="board-list">
-            <div>
-              <div>제목1</div>
-              <div>sdfsd</div>
-            </div>
-            <div>
-              <span style={{ marginRight: "5px" }}>33</span>
-              <span style={{ marginRight: "5px" }}>12</span>
-              <span style={{ marginRight: "5px" }}>12</span>
-            </div>
-          </Card>
-          <Card className="board-list">
-            <div>
-              <div>제목1</div>
-              <div>sdfsd</div>
-            </div>
-            <div>
-              <span style={{ marginRight: "5px" }}>33</span>
-              <span style={{ marginRight: "5px" }}>12</span>
-              <span style={{ marginRight: "5px" }}>12</span>
-            </div>
-          </Card>
-          <Card className="board-list">
-            <div>
-              <div>제목1</div>
-              <div>sdfsd</div>
-            </div>
-            <div>
-              <span style={{ marginRight: "5px" }}>33</span>
-              <span style={{ marginRight: "5px" }}>12</span>
-              <span style={{ marginRight: "5px" }}>12</span>
-            </div>
-          </Card>
-          <Card className="board-list">
-            <div>
-              <div>제목1</div>
-              <div>sdfsd</div>
-            </div>
-            <div>
-              <span style={{ marginRight: "5px" }}>33</span>
-              <span style={{ marginRight: "5px" }}>12</span>
-              <span style={{ marginRight: "5px" }}>12</span>
-            </div>
-          </Card>
-          <Card className="board-list">
-            <div>
-              <div>제목1</div>
-              <div>sdfsd</div>
-            </div>
-            <div>
-              <span style={{ marginRight: "5px" }}>33</span>
-              <span style={{ marginRight: "5px" }}>12</span>
-              <span style={{ marginRight: "5px" }}>12</span>
-            </div>
-          </Card>
-          <Card className="board-list">
-            <div>
-              <div>제목1</div>
-              <div>sdfsd</div>
-            </div>
-            <div>
-              <span style={{ marginRight: "5px" }}>33</span>
-              <span style={{ marginRight: "5px" }}>12</span>
-              <span style={{ marginRight: "5px" }}>12</span>
-            </div>
-          </Card>
-          <Card className="board-list">
-            <div>
-              <div>제목1</div>
-              <div>sdfsd</div>
-            </div>
-            <div>
-              <span style={{ marginRight: "5px" }}>33</span>
-              <span style={{ marginRight: "5px" }}>12</span>
-              <span style={{ marginRight: "5px" }}>12</span>
-            </div>
-          </Card>
-          <Card className="board-list">
-            <div>
-              <div>제목1</div>
-              <div>sdfsd</div>
-            </div>
-            <div>
-              <span style={{ marginRight: "5px" }}>33</span>
-              <span style={{ marginRight: "5px" }}>12</span>
-              <span style={{ marginRight: "5px" }}>12</span>
-            </div>
-          </Card>
-        </GridBody>
-      </Grid>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <Grid>
+          <GridHead>
+            <Link href="/community/write" legacyBehavior>
+              <Page>
+                <SlPencil style={{ marginRight: "5px" }} />
+                작성하기
+              </Page>
+            </Link>
+            <span style={{ fontFamily: "Jua" }}>커뮤니티</span>
+            <Sort>
+              <HiSortDescending style={{ marginRight: "5px" }} />
+              <span>최신순</span>
+            </Sort>
+          </GridHead>
+          <GridSearch>
+            <HiSearch className="searchIcon" />
+            <Input type="text" placeholder="Search" />
+          </GridSearch>
+          <GridBody>
+            <Card className="board-list">
+              <div>
+                <div>제목1</div>
+                <div>sdfsd</div>
+              </div>
+              <div>
+                <span style={{ marginRight: "5px" }}>33</span>
+                <span style={{ marginRight: "5px" }}>12</span>
+                <span style={{ marginRight: "5px" }}>12</span>
+              </div>
+            </Card>
+            <Card className="board-list">
+              <div>
+                <div>제목1</div>
+                <div>sdfsd</div>
+              </div>
+              <div>
+                <span style={{ marginRight: "5px" }}>33</span>
+                <span style={{ marginRight: "5px" }}>12</span>
+                <span style={{ marginRight: "5px" }}>12</span>
+              </div>
+            </Card>
+            <Card className="board-list">
+              <div>
+                <div>제목1</div>
+                <div>sdfsd</div>
+              </div>
+              <div>
+                <span style={{ marginRight: "5px" }}>33</span>
+                <span style={{ marginRight: "5px" }}>12</span>
+                <span style={{ marginRight: "5px" }}>12</span>
+              </div>
+            </Card>
+            <Card className="board-list">
+              <div>
+                <div>제목1</div>
+                <div>sdfsd</div>
+              </div>
+              <div>
+                <span style={{ marginRight: "5px" }}>33</span>
+                <span style={{ marginRight: "5px" }}>12</span>
+                <span style={{ marginRight: "5px" }}>12</span>
+              </div>
+            </Card>
+            <Card className="board-list">
+              <div>
+                <div>제목1</div>
+                <div>sdfsd</div>
+              </div>
+              <div>
+                <span style={{ marginRight: "5px" }}>33</span>
+                <span style={{ marginRight: "5px" }}>12</span>
+                <span style={{ marginRight: "5px" }}>12</span>
+              </div>
+            </Card>
+            <Card className="board-list">
+              <div>
+                <div>제목1</div>
+                <div>sdfsd</div>
+              </div>
+              <div>
+                <span style={{ marginRight: "5px" }}>33</span>
+                <span style={{ marginRight: "5px" }}>12</span>
+                <span style={{ marginRight: "5px" }}>12</span>
+              </div>
+            </Card>
+            <Card className="board-list">
+              <div>
+                <div>제목1</div>
+                <div>sdfsd</div>
+              </div>
+              <div>
+                <span style={{ marginRight: "5px" }}>33</span>
+                <span style={{ marginRight: "5px" }}>12</span>
+                <span style={{ marginRight: "5px" }}>12</span>
+              </div>
+            </Card>
+            <Card className="board-list">
+              <div>
+                <div>제목1</div>
+                <div>sdfsd</div>
+              </div>
+              <div>
+                <span style={{ marginRight: "5px" }}>33</span>
+                <span style={{ marginRight: "5px" }}>12</span>
+                <span style={{ marginRight: "5px" }}>12</span>
+              </div>
+            </Card>
+          </GridBody>
+        </Grid>
+      )}
     </Container>
   );
 }
