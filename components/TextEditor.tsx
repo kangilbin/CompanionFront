@@ -1,11 +1,16 @@
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
 import moment from "moment";
 import { storage } from "../common/firebase";
-import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
+import {
+  ref,
+  getDownloadURL,
+  uploadBytes,
+  deleteObject,
+} from "firebase/storage";
 import { communityWrite } from "../api/backEndApi";
 
 const ReactQuill = dynamic(
@@ -17,23 +22,6 @@ const ReactQuill = dynamic(
   },
   { ssr: false }
 );
-
-const formats = [
-  "header",
-  "font",
-  "size",
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "blockquote",
-  "list",
-  "bullet",
-  "indent",
-  "link",
-  "image",
-  "video",
-];
 
 const Title = styled.input`
   margin: 10px;
@@ -63,6 +51,7 @@ export default function TextEditor() {
   const [title, setTitle] = useState("");
   const [dom, setDom] = useState("");
   const { register, handleSubmit } = useForm();
+  const [img, setImg] = useState([] as any);
 
   const quillRef = useRef<any>();
 
@@ -87,30 +76,82 @@ export default function TextEditor() {
       const storageRef = ref(storage, path + fileNm);
 
       uploadBytes(storageRef, file).then((snapshot) => {
-        getDownloadURL(snapshot.ref).then((downUrl) =>
+        getDownloadURL(snapshot.ref).then((downUrl) => {
           quillRef.current?.editor?.insertEmbed(
             quillRef.current.getEditor().getSelection().index,
             "image",
             downUrl
-          )
-        );
+          );
+          setImg((prev: []) => [...prev, downUrl]);
+        });
       });
     };
   };
+
+  const quillImage = useMemo(() => {
+    const result = Array.from(
+      dom.replace(/amp;/g, "").matchAll(/<img[^>]+src=["']([^'">]+)['"]/gi)
+    );
+    return result.map((item) => item.pop() || "");
+  }, [dom]);
+
+  useEffect(() => {
+    const dellFile = img?.filter((item: any) => !quillImage.includes(item));
+    if (dellFile.length) {
+      dellFile.forEach((item: any) => {
+        const desertRef = ref(storage, item);
+        deleteObject(desertRef).then(() => {
+          const chageFile = img?.filter((item: any) =>
+            quillImage.includes(item)
+          );
+          setImg(chageFile);
+        });
+      });
+    }
+  }, [img, quillImage]);
+
+  const formats = [
+    "header",
+    "font",
+    "size",
+    "bold",
+    "italic",
+    "underline",
+    "align",
+    "strike",
+    "script",
+    "blockquote",
+    "background",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+    "image",
+    "color",
+    "code-block",
+  ];
 
   const modules = useMemo(
     () => ({
       toolbar: {
         container: [
-          ["bold", "italic", "underline", "strike", "blockquote"],
-          [{ size: ["small", false, "large", "huge"] }, { color: [] }],
-          [
-            { list: "ordered" },
-            { list: "bullet" },
-            { indent: "-1" },
-            { indent: "+1" },
-            { align: [] },
-          ],
+          ["bold", "italic", "underline", "strike"],
+          ["blockquote", "code-block"],
+
+          [{ header: 1 }, { header: 2 }],
+          [{ list: "ordered" }, { list: "bullet" }],
+          [{ script: "sub" }, { script: "super" }],
+          [{ indent: "-1" }, { indent: "+1" }],
+          [{ direction: "rtl" }],
+
+          [{ size: ["small", false, "large", "huge"] }],
+          [{ header: [1, 2, 3, 4, 5, 6, false] }],
+
+          [{ color: [] }, { background: [] }],
+          [{ font: [] }],
+          [{ align: [] }],
+
+          ["clean"],
           ["image", "video"],
         ],
         handlers: {

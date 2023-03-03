@@ -1,4 +1,4 @@
-import TextEditor from "./../../components/TextEditor";
+import TextEditor from "../../components/TextEditor";
 import styled from "styled-components";
 import Seo from "./../../components/Seo";
 
