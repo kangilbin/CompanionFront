@@ -3,9 +3,12 @@ import Link from "next/link";
 import { SlPencil } from "react-icons/sl";
 import { HiSearch, HiSortDescending } from "react-icons/hi";
 import Seo from "./../../components/Seo";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { communtiyList } from "../../api/backEndApi";
 import Loader from "./../../components/Loader";
+import { useEffect } from "react";
+import { useScroll } from "framer-motion";
+import BoardCard from "../../components/community/BoardCard";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
@@ -51,15 +54,6 @@ const GridSearch = styled.div`
   }
 `;
 
-const Card = styled.div`
-  padding: 15px;
-  border-bottom: 1px solid #d6d6d6;
-  &:hover {
-    background-color: #e0e6e7;
-  }
-  cursor: pointer;
-`;
-
 const Page = styled.a`
   cursor: pointer;
   padding: 8px;
@@ -76,9 +70,11 @@ const Page = styled.a`
 
 const Input = styled.input`
   padding: 5px;
-  border-radius: 10px;
+  border-radius: 25px;
   padding-left: 40px;
   border: 1px solid ${(props) => props.theme.btnColor};
+  height: 30px;
+  font-family: auto;
 `;
 
 const Sort = styled.div`
@@ -95,10 +91,23 @@ const Grid = styled.div`
 `;
 
 export default function Community() {
-  const { isLoading, data } = useQuery(["community_list"], communtiyList, {
-    refetchOnWindowFocus: false,
-  });
-  console.log(data);
+  const { scrollYProgress } = useScroll();
+  const { isLoading, data, fetchNextPage } = useInfiniteQuery<any>(
+    ["community_list"],
+    ({ pageParam = 1 }) => communtiyList(pageParam),
+    {
+      getNextPageParam: (lastPage) => lastPage.page + 1,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  useEffect(() => {
+    scrollYProgress.onChange(() => {
+      if (scrollYProgress.get() === 1) {
+        fetchNextPage();
+      }
+    });
+  }, [scrollYProgress, fetchNextPage]);
   return (
     <Container>
       <Seo title="간택당한 집사s" />
@@ -121,97 +130,12 @@ export default function Community() {
           </GridHead>
           <GridSearch>
             <HiSearch className="searchIcon" />
-            <Input type="text" placeholder="Search" />
+            <Input type="text" placeholder="Search..." />
           </GridSearch>
           <GridBody>
-            <Card className="board-list">
-              <div>
-                <div>제목1</div>
-                <div>sdfsd</div>
-              </div>
-              <div>
-                <span style={{ marginRight: "5px" }}>33</span>
-                <span style={{ marginRight: "5px" }}>12</span>
-                <span style={{ marginRight: "5px" }}>12</span>
-              </div>
-            </Card>
-            <Card className="board-list">
-              <div>
-                <div>제목1</div>
-                <div>sdfsd</div>
-              </div>
-              <div>
-                <span style={{ marginRight: "5px" }}>33</span>
-                <span style={{ marginRight: "5px" }}>12</span>
-                <span style={{ marginRight: "5px" }}>12</span>
-              </div>
-            </Card>
-            <Card className="board-list">
-              <div>
-                <div>제목1</div>
-                <div>sdfsd</div>
-              </div>
-              <div>
-                <span style={{ marginRight: "5px" }}>33</span>
-                <span style={{ marginRight: "5px" }}>12</span>
-                <span style={{ marginRight: "5px" }}>12</span>
-              </div>
-            </Card>
-            <Card className="board-list">
-              <div>
-                <div>제목1</div>
-                <div>sdfsd</div>
-              </div>
-              <div>
-                <span style={{ marginRight: "5px" }}>33</span>
-                <span style={{ marginRight: "5px" }}>12</span>
-                <span style={{ marginRight: "5px" }}>12</span>
-              </div>
-            </Card>
-            <Card className="board-list">
-              <div>
-                <div>제목1</div>
-                <div>sdfsd</div>
-              </div>
-              <div>
-                <span style={{ marginRight: "5px" }}>33</span>
-                <span style={{ marginRight: "5px" }}>12</span>
-                <span style={{ marginRight: "5px" }}>12</span>
-              </div>
-            </Card>
-            <Card className="board-list">
-              <div>
-                <div>제목1</div>
-                <div>sdfsd</div>
-              </div>
-              <div>
-                <span style={{ marginRight: "5px" }}>33</span>
-                <span style={{ marginRight: "5px" }}>12</span>
-                <span style={{ marginRight: "5px" }}>12</span>
-              </div>
-            </Card>
-            <Card className="board-list">
-              <div>
-                <div>제목1</div>
-                <div>sdfsd</div>
-              </div>
-              <div>
-                <span style={{ marginRight: "5px" }}>33</span>
-                <span style={{ marginRight: "5px" }}>12</span>
-                <span style={{ marginRight: "5px" }}>12</span>
-              </div>
-            </Card>
-            <Card className="board-list">
-              <div>
-                <div>제목1</div>
-                <div>sdfsd</div>
-              </div>
-              <div>
-                <span style={{ marginRight: "5px" }}>33</span>
-                <span style={{ marginRight: "5px" }}>12</span>
-                <span style={{ marginRight: "5px" }}>12</span>
-              </div>
-            </Card>
+            {data?.pages.map((page, i) => (
+              <BoardCard key={i} page={page} />
+            ))}
           </GridBody>
         </Grid>
       )}

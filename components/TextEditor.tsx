@@ -168,6 +168,7 @@ export default function TextEditor() {
       user_id: "jacob",
       title: title,
       content: quillRef.current?.editor.getText(),
+      img: JSON.stringify(img),
       dom: dom,
     };
     communityWrite(requestObj);

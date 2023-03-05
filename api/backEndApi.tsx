@@ -21,11 +21,12 @@ export async function communityWrite(param: any) {
     });
 }
 
-export async function communtiyList() {
+export async function communtiyList(page: number) {
   return axios
-    .get(`${BASE_PATH}/community/list`)
+    .get(`${BASE_PATH}/community/list`, { params: { page } })
     .then((response) => {
-      console.log(response);
+      const obj = { data: response.data, page };
+      return obj;
     })
     .catch((error) => {
       console.log("오류 발생 : ", error.response.status);
