@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { AiOutlineComment, AiOutlineEye, AiOutlineLike } from "react-icons/ai";
 import styled from "styled-components";
 import { elapsedTime } from "./../../common/utills";
@@ -65,10 +66,24 @@ const CardETCGrid = styled.div`
 `;
 
 export default function BoardCard(page: any) {
+  const router = useRouter();
+  const onClick = (id: string) => {
+    router.push({
+      pathname: "/community/read",
+      query: { id },
+    });
+  };
+
   return (
     <>
       {page.page.data?.map((info: any, i: number) => (
-        <Card className="board-list" key={i}>
+        <Card
+          className="board-list"
+          key={i}
+          onClick={() => {
+            onClick(info.id);
+          }}
+        >
           <CardGrid>
             <div style={{ width: "75%" }}>
               <CardTTL>{info.title}</CardTTL>
@@ -77,18 +92,26 @@ export default function BoardCard(page: any) {
             <CardImg url={JSON.parse(info.img)[0]} />
           </CardGrid>
           <CardETCGrid>
-            <CardETC>
-              <AiOutlineEye />
+            <span>
+              <AiOutlineEye
+                style={{
+                  padding: "0px 5px",
+                }}
+              />
               {info.hits}
-            </CardETC>
-            <CardETC>
-              <AiOutlineLike />
+              <AiOutlineLike
+                style={{
+                  padding: "0px 5px",
+                }}
+              />
               {info.likes}
-            </CardETC>
-            <CardETC>
-              <AiOutlineComment />
+              <AiOutlineComment
+                style={{
+                  padding: "0px 5px",
+                }}
+              />
               {info.comments}
-            </CardETC>
+            </span>
             <div style={{ float: "right" }}>
               <span style={{ marginRight: "10px" }}>{info.user_id}</span>
               <span>{elapsedTime(info.reg_time)}</span>

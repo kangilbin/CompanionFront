@@ -12,6 +12,7 @@ import {
   deleteObject,
 } from "firebase/storage";
 import { communityWrite } from "../api/backEndApi";
+import Loader from "./Loader";
 
 const ReactQuill = dynamic(
   async () => {
@@ -20,7 +21,7 @@ const ReactQuill = dynamic(
       return <RQ ref={forwardedRef} {...props} />;
     };
   },
-  { ssr: false }
+  { ssr: false, loading: () => <Loader /> }
 );
 
 const Title = styled.input`

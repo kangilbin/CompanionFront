@@ -1,6 +1,6 @@
 import { atom } from "recoil";
-import { ISVideo, IVideo } from "../api/youTubeApi";
-import { IDItems, IItem, ISItems } from "../api/animalApi";
+import { ISVideo, IVideo } from "./api/youTubeApi";
+import { IDItems, IItem, ISItems } from "./api/animalApi";
 
 export const isVideoAtom = atom<IVideo | ISVideo>({
   key: "isVideo",

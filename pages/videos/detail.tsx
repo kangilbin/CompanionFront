@@ -1,7 +1,7 @@
 import YouTube, { YouTubeProps } from "react-youtube";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { isVideoAtom } from "../../common/atoms";
+import { isVideoAtom } from "../../atoms";
 import { elapsedTime } from "../../common/utills";
 import Seo from "./../../components/Seo";
 

@@ -4,10 +4,10 @@ import { SlPencil } from "react-icons/sl";
 import { HiSearch, HiSortDescending } from "react-icons/hi";
 import Seo from "./../../components/Seo";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { communtiyList } from "../../api/backEndApi";
+import { communityList } from "../../api/backEndApi";
 import Loader from "./../../components/Loader";
-import { useEffect } from "react";
-import { useScroll } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
+import { AnimatePresence, motion, useScroll } from "framer-motion";
 import BoardCard from "../../components/community/BoardCard";
 
 const Container = styled.div`
@@ -90,17 +90,55 @@ const Grid = styled.div`
   border-top: dotted ${(props) => props.theme.pointColor};
 `;
 
+const SortList = styled(motion.ul)`
+  position: absolute;
+  margin-top: 10px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 20%);
+  cursor: pointer;
+  border-radius: 5px;
+  z-index: 1;
+  background: white;
+  list-style-type: none;
+  padding: 0px;
+`;
+
+const Sortli = styled.li`
+  padding: 10px 18px;
+  border-bottom: 1px solid #d6d6d6;
+  &:hover {
+    border-bottom: 1px solid ${(props) => props.theme.pointColor};
+    color: #00c3ff;
+    font-weight: bold;
+  }
+`;
+
+const Title = styled.span`
+  font-size: 1.5rem;
+  font-family: "Jua";
+`;
+
+const sortVariants = {
+  initial: { opacity: 0, scale: 0 },
+  visible: { opacity: 1, scale: 1 },
+  leaving: { opacity: 0, scale: 0, y: -30 },
+};
+
 export default function Community() {
   const { scrollYProgress } = useScroll();
-  const { isLoading, data, fetchNextPage } = useInfiniteQuery<any>(
+  const [keyword, setKeyword] = useState("");
+  const [isSort, setIsSort] = useState(false);
+  const [sortText, setSortText] = useState("최신순");
+  const [sort, setSort] = useState("reg_time");
+  const outside = useRef<HTMLDivElement>(null);
+
+  const { isLoading, data, fetchNextPage, refetch } = useInfiniteQuery<any>(
     ["community_list"],
-    ({ pageParam = 1 }) => communtiyList(pageParam),
+    ({ pageParam = 0 }) => communityList(pageParam, keyword, sort),
     {
       getNextPageParam: (lastPage) => lastPage.page + 1,
       refetchOnWindowFocus: false,
     }
   );
-
   useEffect(() => {
     scrollYProgress.onChange(() => {
       if (scrollYProgress.get() === 1) {
@@ -108,8 +146,30 @@ export default function Community() {
       }
     });
   }, [scrollYProgress, fetchNextPage]);
+
+  useEffect(() => {
+    refetch();
+  }, [sort, refetch]);
+  function onSubmit() {
+    refetch();
+  }
+  function onKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key == "Enter") {
+      onSubmit();
+    }
+  }
+  function onClickSort(event: any) {
+    setSortText(event.target.innerText);
+    setSort(event.target.attributes[0].value);
+    setIsSort(false);
+  }
   return (
-    <Container>
+    <Container
+      onClick={(e: any) => {
+        if (isSort && (!outside.current || !outside.current.contains(e.target)))
+          setIsSort(false);
+      }}
+    >
       <Seo title="간택당한 집사s" />
       {isLoading ? (
         <Loader />
@@ -122,15 +182,58 @@ export default function Community() {
                 작성하기
               </Page>
             </Link>
-            <span style={{ fontFamily: "Jua" }}>커뮤니티</span>
-            <Sort>
-              <HiSortDescending style={{ marginRight: "5px" }} />
-              <span>최신순</span>
-            </Sort>
+            <Title>커뮤니티</Title>
+            <div>
+              <Sort onClick={() => setIsSort((prev) => !prev)}>
+                <HiSortDescending style={{ marginRight: "5px" }} />
+                <span>{sortText}</span>
+              </Sort>
+              <AnimatePresence>
+                {isSort && (
+                  <SortList
+                    variants={sortVariants}
+                    initial="initial"
+                    animate="visible"
+                    exit="leaving"
+                    onClick={onClickSort}
+                  >
+                    <Sortli
+                      value="reg_time"
+                      className={sort === "reg_time" ? "sort_active" : ""}
+                    >
+                      최신순
+                    </Sortli>
+                    <Sortli
+                      value="hits"
+                      className={sort === "hits" ? "sort_active" : ""}
+                    >
+                      조회순
+                    </Sortli>
+                    <Sortli
+                      value="likes"
+                      className={sort === "likes" ? "sort_active" : ""}
+                    >
+                      추천순
+                    </Sortli>
+                    <Sortli
+                      value="comments"
+                      className={sort === "comments" ? "sort_active" : ""}
+                    >
+                      댓글순
+                    </Sortli>
+                  </SortList>
+                )}
+              </AnimatePresence>
+            </div>
           </GridHead>
           <GridSearch>
-            <HiSearch className="searchIcon" />
-            <Input type="text" placeholder="Search..." />
+            <HiSearch className="searchIcon" onClick={onSubmit} />
+            <Input
+              type="text"
+              placeholder="Search..."
+              onKeyPress={onKeyPress}
+              onChange={(e) => setKeyword(e.currentTarget.value)}
+            />
           </GridSearch>
           <GridBody>
             {data?.pages.map((page, i) => (

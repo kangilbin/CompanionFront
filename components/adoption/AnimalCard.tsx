@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { IGetAbandonedList, IItem } from "../../api/animalApi";
 import moment from "moment";
 import { useSetRecoilState } from "recoil";
-import { isAnimalAtom } from "../../common/atoms";
+import { isAnimalAtom } from "../../atoms";
 import { motion } from "framer-motion";
 
 const Descript = styled.div`

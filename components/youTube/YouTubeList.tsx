@@ -5,7 +5,7 @@ import { elapsedTime } from "../../common/utills";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { useSetRecoilState } from "recoil";
-import { isVideoAtom } from "../../common/atoms";
+import { isVideoAtom } from "../../atoms";
 import YouTubePlay from "./YouTubePlay";
 import { useRouter } from "next/router";
 

@@ -10,5 +10,3 @@
    , React-Hook-Form(Form 검증), Quill Editor(텍스트 에디터), moment(시간 포맷), firebase(Firebase 연동)
 4. 사용 API : YouTube Data API, 네이버 뉴스 API(25000회 제한이있어 추후 크롤링으로 변경 예정), 카카오 맵 API(사용 예정)
    공공데이터 포털 유기동물 API
-
-- 모든 외부 API 통신은 백엔드 개발시 교체 예정

@@ -3,7 +3,7 @@ import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { useRecoilValue, useResetRecoilState } from "recoil";
 import styled from "styled-components";
-import { isAnimalAtom } from "../../common/atoms";
+import { isAnimalAtom } from "../../atoms";
 const Overlay = styled(motion.div)`
   position: fixed;
   top: 0;

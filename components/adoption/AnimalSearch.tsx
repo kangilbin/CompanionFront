@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRecoilState } from "recoil";
 import { getSidoList, getSigunguList } from "../../api/animalApi";
-import { isSidoAtom, isSigunguAtom } from "../../common/atoms";
+import { isSidoAtom, isSigunguAtom } from "../../atoms";
 import DatePicker from "../DatePicker";
 
 const SearchGrid = styled.div`

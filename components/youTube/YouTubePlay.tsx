@@ -3,7 +3,7 @@ import { useRecoilValue } from "recoil";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { IoVolumeMuteOutline, IoVolumeMediumOutline } from "react-icons/io5";
-import { isVideoAtom } from "../../common/atoms";
+import { isVideoAtom } from "../../atoms";
 import { elapsedTime } from "../../common/utills";
 
 const Descript = styled.div`
