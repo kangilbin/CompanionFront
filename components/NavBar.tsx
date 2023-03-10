@@ -74,12 +74,13 @@ const SubTab = styled.div`
 const SubPage = styled.a`
   cursor: pointer;
   text-decoration-line: none;
-  font-family: "Dongle", sans-serif;
-  font-size: 1.5rem;
+  font-family: "Noto Sans KR";
   padding: 0px 5px 0px 5px;
   border: 2px solid ${(props) => props.theme.pointColor};
   color: #00c3ff;
   border-radius: 15px;
+  font-weight: bold;
+  margin-right: 10px;
   &:hover {
     box-shadow: 1px 1px 2px 1px rgb(195 243 255);
     color: #a39595;
@@ -94,6 +95,7 @@ const UserBox = styled.div`
 const LoginBtn = styled.button`
   padding: 5px 10px 5px 10px;
   font-family: "Noto Sans KR";
+  height: 100%;
   font-weight: bold;
   background-color: white;
   box-shadow: ${(props) => props.theme.boxShadow};
@@ -105,6 +107,7 @@ const LoginBtn = styled.button`
   }
 `;
 const JoinBtn = styled.button`
+  height: 100%;
   padding: 5px 10px 5px 10px;
   font-family: "Noto Sans KR";
   font-weight: bold;
