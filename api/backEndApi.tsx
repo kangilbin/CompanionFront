@@ -64,3 +64,17 @@ export async function communityComments(id: string) {
       }
     });
 }
+
+export async function commentInsert(obj: any) {
+  return axios
+    .post(`${COMMENT_PATH}/${obj.type}`, {
+      ...obj,
+    })
+    .then((response) => response.data)
+    .catch((error) => {
+      console.log("오류 발생 : ", error.response.status);
+      if (error.response.status === 404) {
+        //window.location.href = "/404";
+      }
+    });
+}

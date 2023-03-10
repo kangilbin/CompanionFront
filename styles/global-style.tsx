@@ -98,5 +98,8 @@ abbr[title] {
   color: #00c3ff;
   font-weight: bold;
 }
-
+.stop-scroll{
+  height: 100%;
+  overflow: hidden;
+}
 `;

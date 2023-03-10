@@ -1,17 +1,22 @@
-import { useQueries } from "@tanstack/react-query";
+import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
 import styled from "styled-components";
-import { communityComments, communityRead } from "../../api/backEndApi";
+import {
+  commentInsert,
+  communityComments,
+  communityRead,
+} from "../../api/backEndApi";
 import Loader from "../../components/Loader";
 import Seo from "../../components/Seo";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { BiTime } from "react-icons/bi";
 import { AiOutlineEye, AiOutlineLike, AiOutlineComment } from "react-icons/ai";
+import { CgMoreR } from "react-icons/cg";
 import { elapsedTime } from "./../../common/utills";
 import cat from "../../public/img/cat.png";
 import Image from "next/image";
 import BoardWriting from "../../components/community/BoardWriting";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
@@ -49,9 +54,9 @@ const GirdTTLSub2 = styled.div`
   color: ${(props) => props.theme.btnColor};
 `;
 
-const GridBottom = styled.div``;
 const CommentReg = styled.div`
-  border: solid 1px ${(porps) => porps.theme.btnColor};
+  border: none;
+  background: gainsboro;
   padding: 1.5rem;
   border-radius: 0.5rem;
   gap: 1rem;
@@ -59,15 +64,15 @@ const CommentReg = styled.div`
 `;
 const TextArea = styled.textarea`
   resize: none;
-  border: solid 1px ${(porps) => porps.theme.btnColor};
   border-radius: 0.5rem;
   width: 100%;
+  border: none;
 `;
 
 const CommentBtn = styled.button`
   cursor: pointer;
   padding: 8px;
-  border: 1px solid;
+  border: none;
   border-radius: 5px;
   background-color: ${(props) => props.theme.pointColor};
   font-weight: bold;
@@ -94,6 +99,8 @@ const CommentUser = styled.div`
   color: ${(props) => props.theme.btnColor};
   font-family: "Jua";
   font-size: 1.1rem;
+  display: flex;
+  justify-content: space-between;
 `;
 const CommentTime = styled.div`
   display: flex;
@@ -105,10 +112,97 @@ const CommentTime = styled.div`
 const CommentCTT = styled.div`
   padding: 10px 0px;
 `;
+
+const MoreBTN = styled.span`
+  svg {
+    height: 1.5rem;
+    width: 1.5rem;
+    cursor: pointer;
+    &:hover {
+      color: ${(props) => props.theme.pointColor};
+    }
+  }
+`;
+interface ITaget {
+  top?: number;
+  left?: number;
+}
+
+const MoreBtnUl = styled(motion.div)<ITaget>`
+  position: absolute;
+  margin-top: 10px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 20%);
+  cursor: pointer;
+  border-radius: 5px;
+  z-index: 1;
+  background: white;
+  padding: 0px;
+  left: ${(props) => props.left}px;
+  top: ${(props) => props.top}px;
+`;
+
+const MoreBtnLi = styled.div`
+  padding: 10px 18px;
+  border-bottom: 1px solid #d6d6d6;
+  &:hover {
+    border-bottom: 1px solid ${(props) => props.theme.pointColor};
+    color: ${(props) => props.theme.pointColor};
+    font-weight: bold;
+  }
+`;
+
+const Overlay = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  background: rgba(0, 0, 0, 0.5);
+  left: 0;
+`;
+const Reply = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: solid 1px ${(porps) => porps.theme.btnColor};
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  gap: 1rem;
+  display: flex;
+  border: none;
+  background: gainsboro;
+  width: 50%;
+`;
+
+const moreVariants = {
+  initial: { opacity: 0, scale: 0 },
+  visible: { opacity: 1, scale: 1, y: -10, x: -20 },
+  leaving: { opacity: 0, scale: 0, y: -50 },
+};
+
+interface ICommentId {
+  parent_comment_id: number | undefined;
+  comment_id: number | undefined;
+}
+
 export default function Read({
   params,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [isLoading, setIsLoading] = useState(true);
+  const [comment, setComment] = useState("");
+  const queryClient = useQueryClient();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isReply, setIsReply] = useState(false);
+  const [isReplyOpen, setISReplyOpen] = useState(false);
+  const [commentId, setCommentId] = useState<ICommentId | null>({
+    parent_comment_id: 0,
+    comment_id: 0,
+  });
+  const [targetSize, setTargetSize] = useState<any>(null);
+  const outside = useRef<HTMLDivElement>(null);
+  const outReplay = useRef<HTMLDivElement>(null);
+
   const results = useQueries({
     queries: [
       {
@@ -123,13 +217,82 @@ export default function Read({
       },
     ],
   });
+
+  const mutation = useMutation(
+    ({ type, parent_comment_id, content }: any) =>
+      commentInsert({ type, board_id: params.id, parent_comment_id, content }),
+    {
+      onSuccess: (data) => {
+        queryClient.setQueryData(["comment", "select"], data);
+        setIsReply(false);
+        setComment("");
+      },
+    }
+  );
+
   useEffect(() => {
     const loadingFinishAll = results.some((result) => result.isLoading);
     setIsLoading(loadingFinishAll);
   }, [results]);
 
+  useEffect(() => {
+    isReply
+      ? document.body.classList.add("stop-scroll")
+      : document.body.classList.remove("stop-scroll");
+  }, [isReply]);
+
+  const onClick = (type: string) => {
+    if (comment.length === 0) {
+      alert("댓글 내용을 작성해주세요.");
+    } else {
+      const obj = {
+        type,
+        parent_comment_id: commentId?.parent_comment_id,
+        content: comment,
+      };
+      mutation.mutate(obj);
+    }
+  };
+
+  const targetFind = (event: React.FormEvent<HTMLSpanElement>) => {
+    const target = event.currentTarget;
+    const targetX = target?.getBoundingClientRect().left;
+    const abX = window.pageXOffset + (targetX ?? 0);
+
+    const targetY = target?.getBoundingClientRect().top;
+    const abY = window.pageYOffset + (targetY ?? 0);
+
+    const opt = {
+      left: abX,
+      top: abY + 30,
+    };
+    setIsOpen(true);
+    setTargetSize(opt);
+  };
+
+  useEffect(() => {
+    if (!!commentId && commentId.comment_id === 0) {
+      setISReplyOpen(true);
+    } else {
+      setISReplyOpen(false);
+    }
+  }, [commentId]);
+  const moreBtnClick = (
+    event: React.FormEvent<HTMLSpanElement>,
+    parent_comment_id: number,
+    comment_id: number
+  ) => {
+    targetFind(event);
+    setCommentId({ parent_comment_id, comment_id });
+  };
+
   return (
-    <Container>
+    <Container
+      onClick={(e: any) => {
+        if (isOpen && (!outside.current || !outside.current.contains(e.target)))
+          setIsOpen(false);
+      }}
+    >
       <Seo title="간택당한 집사s" />
       {isLoading ? (
         <Loader />
@@ -174,7 +337,7 @@ export default function Read({
             </GirdTTLSub2>
           </GridTTL>
           <BoardWriting data={results[0].data.dom} />
-          <GridBottom>
+          <div>
             {results[1].data.length ? (
               <div style={{ marginBottom: "30px" }}>
                 {results[1].data.length}개의 댓글
@@ -183,14 +346,12 @@ export default function Read({
               ""
             )}
             <CommentReg>
-              <Image
-                src={cat}
-                alt="Picture of the author"
-                width={100}
-                height={100}
+              <Image src={cat} alt="야옹이 사진" width={100} height={100} />
+              <TextArea
+                onChange={(e) => setComment(e.currentTarget.value)}
+                value={comment}
               />
-              <TextArea />
-              <CommentBtn>댓글 작성</CommentBtn>
+              <CommentBtn onClick={() => onClick("new")}>댓글 작성</CommentBtn>
             </CommentReg>
             {(() => {
               let change: number;
@@ -199,16 +360,28 @@ export default function Read({
                 if (change !== item.parent_comment_id) {
                   ele.push(
                     <CommentList key={i}>
-                      <CommentUser>{item.user_id}</CommentUser>
+                      <CommentUser>
+                        <span>{item.user_id}</span>
+                        <MoreBTN
+                          onClick={(event) =>
+                            moreBtnClick(
+                              event,
+                              item.parent_comment_id,
+                              item.comment_id
+                            )
+                          }
+                          ref={outside}
+                        >
+                          <CgMoreR />
+                        </MoreBTN>
+                      </CommentUser>
                       <CommentCTT>{item.content}</CommentCTT>
                       <CommentTime>
-                        {
-                          <BiTime
-                            style={{
-                              padding: "0px 5px",
-                            }}
-                          />
-                        }
+                        <BiTime
+                          style={{
+                            padding: "0px 5px",
+                          }}
+                        />
                         {elapsedTime(item.dt)}
                       </CommentTime>
                     </CommentList>
@@ -217,7 +390,21 @@ export default function Read({
                 } else {
                   ele.push(
                     <CommentRe key={i}>
-                      <CommentUser>{item.user_id}</CommentUser>
+                      <CommentUser>
+                        <span>{item.user_id}</span>
+                        <MoreBTN
+                          onClick={(event) =>
+                            moreBtnClick(
+                              event,
+                              item.parent_comment_id,
+                              item.comment_id
+                            )
+                          }
+                          ref={outside}
+                        >
+                          <CgMoreR />
+                        </MoreBTN>
+                      </CommentUser>
                       <CommentCTT>{item.content}</CommentCTT>
                       <CommentTime>
                         <BiTime
@@ -231,10 +418,67 @@ export default function Read({
                   );
                 }
               });
-
               return <div style={{ margin: "30px 0px" }}>{ele}</div>;
             })()}
-          </GridBottom>
+            <AnimatePresence>
+              {isOpen && (
+                <MoreBtnUl
+                  variants={moreVariants}
+                  initial="initial"
+                  animate="visible"
+                  exit="leaving"
+                  {...targetSize}
+                >
+                  {isReplyOpen && (
+                    <MoreBtnLi
+                      onClick={() => {
+                        setIsReply(true);
+                      }}
+                    >
+                      답글
+                    </MoreBtnLi>
+                  )}
+                  <MoreBtnLi>수정</MoreBtnLi>
+                  <MoreBtnLi>삭제</MoreBtnLi>
+                </MoreBtnUl>
+              )}
+            </AnimatePresence>
+            <AnimatePresence>
+              {isReply && (
+                <>
+                  <Overlay
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={(e: any) => {
+                      if (
+                        isReply &&
+                        (!outReplay.current ||
+                          !outReplay.current.contains(e.target))
+                      ) {
+                        setIsReply(false);
+                      }
+                    }}
+                  >
+                    <Reply ref={outReplay}>
+                      <Image
+                        src={cat}
+                        alt="야옹이 사진"
+                        width={100}
+                        height={100}
+                      />
+                      <TextArea
+                        onChange={(e) => setComment(e.currentTarget.value)}
+                        value={comment}
+                      />
+                      <CommentBtn onClick={() => onClick("reply")}>
+                        답글 작성
+                      </CommentBtn>
+                    </Reply>
+                  </Overlay>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
         </Grid>
       )}
     </Container>

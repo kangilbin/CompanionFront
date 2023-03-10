@@ -7,5 +7,7 @@ declare module "styled-components" {
     btnColor: string;
     pointColor: string;
     text2Color: string;
+    stPointColor: string;
+    boxShadow: string;
   }
 }

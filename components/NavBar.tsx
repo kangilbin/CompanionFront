@@ -2,10 +2,6 @@ import Link from "next/link";
 import styled from "styled-components";
 import { motion, useCycle, useScroll } from "framer-motion";
 import { useRouter } from "next/router";
-import { UserNav } from "./userMenu/UserNav";
-import { useRef, useEffect, useState } from "react";
-import MenuToggle from "./userMenu/MenuToggle";
-import { FiUserCheck } from "react-icons/fi";
 
 const Menu = styled.nav`
   display: grid;
@@ -72,6 +68,8 @@ const tabVariants = {
 const SubTab = styled.div`
   grid-column: 3/5;
   margin-top: 10px;
+  justify-content: space-between;
+  display: flex;
 `;
 const SubPage = styled.a`
   cursor: pointer;
@@ -88,67 +86,41 @@ const SubPage = styled.a`
   }
 `;
 
-const Nav = styled(motion.nav)`
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 300px;
-  height: 100%;
+const UserBox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+const LoginBtn = styled.button`
+  padding: 5px 10px 5px 10px;
+  font-family: "Noto Sans KR";
+  font-weight: bold;
+  background-color: white;
+  box-shadow: ${(props) => props.theme.boxShadow};
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  &:hover {
+    color: ${(props) => props.theme.btnColor};
+  }
+`;
+const JoinBtn = styled.button`
+  padding: 5px 10px 5px 10px;
+  font-family: "Noto Sans KR";
+  font-weight: bold;
+  background-color: ${(props) => props.theme.pointColor};
+  box-shadow: ${(props) => props.theme.boxShadow};
+  color: white;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  &:hover {
+    background-color: ${(props) => props.theme.stPointColor};
+  }
 `;
 
-const NavBackGround = styled(motion.div)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 300px;
-  background-color: #e0e6e7;
-  box-shadow: rgb(190 190 190) 3px 3px 5px 3px;
-`;
-
-const sidebar = {
-  open: (height = 1000) => ({
-    clipPath: `circle(${height * 2 + 200}px at 258px 180px)`,
-    transition: {
-      type: "spring",
-      stiffness: 20,
-      restDelta: 2,
-    },
-  }),
-  closed: {
-    clipPath: "circle(30px at 258px 180px)",
-    transition: {
-      delay: 0.5,
-      type: "spring",
-      stiffness: 400,
-      damping: 40,
-    },
-  },
-};
-
-const sidebar1 = {
-  open: {
-    zIndex: "1",
-    transition: {
-      type: "spring",
-      stiffness: 20,
-      restDelta: 2,
-    },
-  },
-  closed: {
-    zIndex: "0",
-    transition: {
-      delay: 1,
-      type: "spring",
-      stiffness: 400,
-      damping: 40,
-    },
-  },
-};
 export default function NavBar() {
   const router = useRouter();
-  const [isOpen, toggleOpen] = useCycle(false, true);
-  const { scrollY } = useScroll();
   return (
     <Menu>
       <Link href="/" legacyBehavior>
@@ -193,19 +165,23 @@ export default function NavBar() {
         <Link href="/adoption" legacyBehavior>
           <SubPage>유기동물</SubPage>
         </Link>
+        <UserBox>
+          <LoginBtn
+            onClick={() => {
+              router.push("/login");
+            }}
+          >
+            로그인
+          </LoginBtn>
+          <JoinBtn
+            onClick={() => {
+              router.push("/join");
+            }}
+          >
+            회원가입
+          </JoinBtn>
+        </UserBox>
       </SubTab>
-
-      {/* <Nav
-        initial={false}
-        variants={sidebar1}
-        animate={isOpen ? "open" : "closed"}
-        ref={containerRef}
-      >
-        <NavBackGround variants={sidebar} />
-
-        <UserNav />
-        <MenuToggle toggle={() => toggleOpen()} isOpen={isOpen} />
-      </Nav> */}
     </Menu>
   );
 }
