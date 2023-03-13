@@ -50,7 +50,36 @@ const LoginBox = styled.div`
   border-radius: 15px;
 `;
 
-const Input = styled.input``;
+const LoginId = styled.div`
+  border: 1px solid;
+  padding: 10px;
+  border-radius: 15px 15px 0px 0px;
+  &:focus-within {
+    border: 1px solid ${(props) => props.theme.pointColor};
+    color: ${(props) => props.theme.pointColor};
+  }
+`;
+const LoginPw = styled.div`
+  border: 1px solid;
+  padding: 10px;
+  border-radius: 0px 0px 15px 15px;
+  &:focus-within {
+    border: 1px solid ${(props) => props.theme.pointColor};
+    color: ${(props) => props.theme.pointColor};
+  }
+`;
+
+const Table = styled.div`
+  display: table;
+  border-collapse: collapse;
+`;
+
+const Input = styled.input`
+  border: none;
+  height: 30px;
+  margin-left: 10px;
+  outline: none;
+`;
 export default function Login() {
   return (
     <Container>
@@ -68,16 +97,16 @@ export default function Login() {
           <span>아이디 로그인</span>
         </Hr>
         <LoginBox>
-          <div>
-            <div>
+          <Table>
+            <LoginId>
               <SlUser />
               <Input placeholder="아이디" />
-            </div>
-            <div>
+            </LoginId>
+            <LoginPw>
               <SlLock />
               <Input placeholder="비밀번호" />
-            </div>
-          </div>
+            </LoginPw>
+          </Table>
           <div>
             <button>로그인</button>
           </div>
