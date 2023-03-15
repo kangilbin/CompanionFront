@@ -1,3 +1,5 @@
+import Cookies from "react-cookie/cjs/Cookies";
+
 export const elapsedTime = (date: string) => {
   const start = +new Date(date);
   const end = +new Date();
@@ -20,4 +22,18 @@ export const elapsedTime = (date: string) => {
     }
   }
   return "방금 전";
+};
+
+const cookies = new Cookies();
+
+export const setCookie = (name: string, value: any, option: {}) => {
+  return cookies.set(name, value, { ...option });
+};
+
+export const getCookie = (name: string) => {
+  return cookies.get(name);
+};
+
+export const removeCookie = (name: string, option: {}) => {
+  return cookies.remove(name, { ...option });
 };

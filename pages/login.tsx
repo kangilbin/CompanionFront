@@ -3,6 +3,8 @@ import styled from "styled-components";
 import Seo from "../components/Seo";
 import cat from "../public/img/cat.png";
 import { SlLock, SlUser } from "react-icons/sl";
+import { useState } from "react";
+import { login } from "../api/backEndApi";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
@@ -45,33 +47,43 @@ const Hr = styled.div`
 
 const LoginBox = styled.div`
   display: inline-block;
-  padding: 10px;
-  border: 1px solid;
+  padding: 25px;
   border-radius: 15px;
+  box-shadow: ${(props) => props.theme.boxShadow};
+  border: none;
+  width: 460px;
+  @media (max-width: 632px) {
+    width: 100%;
+  }
 `;
 
 const LoginId = styled.div`
-  border: 1px solid;
+  position: relative;
+  border: 1px solid ${(props) => props.theme.btnColor};
+  color: ${(props) => props.theme.btnColor};
   padding: 10px;
   border-radius: 15px 15px 0px 0px;
+  margin-bottom: -1px;
+  text-align: left;
   &:focus-within {
+    z-index: 1;
     border: 1px solid ${(props) => props.theme.pointColor};
     color: ${(props) => props.theme.pointColor};
   }
 `;
 const LoginPw = styled.div`
-  border: 1px solid;
+  position: relative;
+  border: 1px solid ${(props) => props.theme.btnColor};
+  color: ${(props) => props.theme.btnColor};
   padding: 10px;
   border-radius: 0px 0px 15px 15px;
+  margin-top: -1px;
+  text-align: left;
   &:focus-within {
+    z-index: 1;
     border: 1px solid ${(props) => props.theme.pointColor};
     color: ${(props) => props.theme.pointColor};
   }
-`;
-
-const Table = styled.div`
-  display: table;
-  border-collapse: collapse;
 `;
 
 const Input = styled.input`
@@ -79,8 +91,34 @@ const Input = styled.input`
   height: 30px;
   margin-left: 10px;
   outline: none;
+  width: 90%;
+  font-size: 1.1rem;
+`;
+
+const LoginBtn = styled.button`
+  width: 100%;
+  border-radius: 15px;
+  height: 3rem;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-family: "Noto Sans KR";
+  font-weight: bold;
+  background-color: #abe2f3;
+  box-shadow: ${(props) => props.theme.boxShadow};
+  font-size: 1.5rem;
+  &:hover {
+    background-color: ${(props) => props.theme.stPointColor};
+    color: white;
+  }
 `;
 export default function Login() {
+  const [id, setId] = useState("");
+  const [pw, setPw] = useState("");
+
+  const onClickLogin = () => {
+    login({ id, pw });
+  };
   return (
     <Container>
       <Seo title="로그인s" />
@@ -97,18 +135,35 @@ export default function Login() {
           <span>아이디 로그인</span>
         </Hr>
         <LoginBox>
-          <Table>
+          <div>
             <LoginId>
-              <SlUser />
-              <Input placeholder="아이디" />
+              <SlUser
+                style={{
+                  height: "1.1rem",
+                  width: "1.1rem",
+                }}
+              />
+              <Input
+                placeholder="아이디"
+                onChange={(e) => setId(e.currentTarget.value)}
+              />
             </LoginId>
             <LoginPw>
-              <SlLock />
-              <Input placeholder="비밀번호" />
+              <SlLock
+                style={{
+                  height: "1.1rem",
+                  width: "1.1rem",
+                }}
+              />
+              <Input
+                placeholder="비밀번호"
+                type="password"
+                onChange={(e) => setPw(e.currentTarget.value)}
+              />
             </LoginPw>
-          </Table>
-          <div>
-            <button>로그인</button>
+          </div>
+          <div style={{ paddingTop: "25px" }}>
+            <LoginBtn onClick={onClickLogin}>로그인</LoginBtn>
           </div>
         </LoginBox>
       </Grid>
