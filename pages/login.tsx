@@ -112,12 +112,17 @@ const LoginBtn = styled.button`
     color: white;
   }
 `;
+const Error = styled.div`
+  padding-top: 25px;
+  text-align: left;
+  color: red;
+`;
 export default function Login() {
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
-
+  const [error, setError] = useState<any>();
   const onClickLogin = () => {
-    login({ id, pw });
+    setError(login({ id, pw }));
   };
   return (
     <Container>
@@ -162,6 +167,15 @@ export default function Login() {
               />
             </LoginPw>
           </div>
+          {Boolean(error) && (
+            <>
+              <Error>
+                아이디 또는 비밀번호를 잘못 입력했습니다.
+                <br />
+                입력하신 내용을 다시 확인해주세요.
+              </Error>
+            </>
+          )}
           <div style={{ paddingTop: "25px" }}>
             <LoginBtn onClick={onClickLogin}>로그인</LoginBtn>
           </div>

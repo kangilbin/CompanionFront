@@ -120,6 +120,49 @@ export async function login({ id, pw }: { id: string; pw: string }) {
     .catch((error) => {
       if (error.response.status === 404) {
         //window.location.href = "/404";
+      } else if (error.response.status === 400) {
+        return error.response.status;
+      }
+    });
+}
+
+// 닉네임 중복 체크
+export async function duplicate(nickname: string) {
+  return axios
+    .get(`${AUTH_PATH}/check`, { params: { nickname } })
+    .then((response) => response.data)
+    .catch((error) => {
+      if (error.response.status === 404) {
+        //window.location.href = "/404";
+      } else if (error.response.status === 400) {
+        return error.response.status;
+      }
+    });
+}
+
+export interface IJoin {
+  user_name: string;
+  id: string;
+  nickname: string;
+  phone: number;
+  password: string;
+  addr?: string;
+  zip_no?: string;
+  addr_detail?: string;
+}
+
+// 회원가입
+export async function join(param: IJoin) {
+  return axios
+    .post(`${AUTH_PATH}/join`, { ...param })
+    .then(() => {
+      login({ id: param.id, pw: param.password });
+    })
+    .catch((error) => {
+      if (error.response.status === 404) {
+        //window.location.href = "/404";
+      } else if (error.response.status === 400) {
+        alert(error.response.data.error);
       }
     });
 }

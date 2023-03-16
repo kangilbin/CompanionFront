@@ -35,5 +35,6 @@ export const getCookie = (name: string) => {
 };
 
 export const removeCookie = (name: string, option: {}) => {
-  return cookies.remove(name, { ...option });
+  cookies.remove(name, { ...option });
+  window.location.href = "/";
 };

@@ -1,7 +1,10 @@
 import Link from "next/link";
 import styled from "styled-components";
-import { motion, useCycle, useScroll } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRouter } from "next/router";
+import { getCookie, removeCookie } from "../common/utills";
+import { useEffect, useState, useRef } from "react";
+import { FaUserCircle } from "react-icons/fa";
 
 const Menu = styled.nav`
   display: grid;
@@ -121,9 +124,59 @@ const JoinBtn = styled.button`
     background-color: ${(props) => props.theme.stPointColor};
   }
 `;
+const Info = styled.span`
+  position: absolute;
+  z-index: 1;
+  right: 4rem;
+  svg {
+    height: 2.5rem;
+    width: 2.5rem;
+    color: ${(props) => props.theme.btnColor};
+    cursor: pointer;
+    box-shadow: ${(props) => props.theme.boxShadow};
+    border-radius: 1.5rem;
+
+    &:hover {
+      color: ${(props) => props.theme.pointColor};
+    }
+  }
+`;
+
+const InfoList = styled(motion.div)`
+  position: absolute;
+  margin-top: 45px;
+  right: 30px;
+  background: white;
+  box-shadow: ${(props) => props.theme.boxShadow};
+  z-index: 2;
+`;
+
+const InfoItem = styled.div`
+  padding: 10px 18px;
+  border-bottom: 1px solid #d6d6d6;
+  &:hover {
+    border-bottom: 1px solid ${(props) => props.theme.pointColor};
+    color: #00c3ff;
+    font-weight: bold;
+    cursor: pointer;
+  }
+`;
+
+const userVariants = {
+  initial: { opacity: 0, scale: 0 },
+  visible: { opacity: 1, scale: 1 },
+  leaving: { opacity: 0, scale: 0, y: -30 },
+};
 
 export default function NavBar() {
   const router = useRouter();
+  const [info, setInfo] = useState();
+  const [isOpenInfo, setIsOpenInfo] = useState(false);
+  const ref = useRef<any>();
+  useEffect(() => {
+    setInfo(getCookie("userInfo"));
+  }, []);
+
   return (
     <Menu>
       <Link href="/" legacyBehavior>
@@ -168,22 +221,47 @@ export default function NavBar() {
         <Link href="/adoption" legacyBehavior>
           <SubPage>유기동물</SubPage>
         </Link>
-        <UserBox>
-          <LoginBtn
-            onClick={() => {
-              router.push("/login");
-            }}
-          >
-            로그인
-          </LoginBtn>
-          <JoinBtn
-            onClick={() => {
-              router.push("/join");
-            }}
-          >
-            회원가입
-          </JoinBtn>
-        </UserBox>
+        {Boolean(info) ? (
+          <div>
+            <Info>
+              <FaUserCircle onClick={() => setIsOpenInfo((prev) => !prev)} />
+            </Info>
+            {isOpenInfo && (
+              <InfoList
+                variants={userVariants}
+                initial="initial"
+                animate="visible"
+                exit="leaving"
+                ref={ref}
+                //onClick={onClickSort}
+              >
+                <InfoItem>계정정보</InfoItem>
+                <InfoItem
+                  onClick={() => removeCookie("userInfo", { path: "/" })}
+                >
+                  로그아웃
+                </InfoItem>
+              </InfoList>
+            )}
+          </div>
+        ) : (
+          <UserBox>
+            <LoginBtn
+              onClick={() => {
+                router.push("/login");
+              }}
+            >
+              로그인
+            </LoginBtn>
+            <JoinBtn
+              onClick={() => {
+                router.push("/join");
+              }}
+            >
+              회원가입
+            </JoinBtn>
+          </UserBox>
+        )}
       </SubTab>
     </Menu>
   );
