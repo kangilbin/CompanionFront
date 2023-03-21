@@ -22,6 +22,8 @@ const SearchUl = styled(motion.ul)`
   flex-direction: column;
   gap: 10px;
   background: #fafafa;
+  list-style-type: none;
+  padding: 0px;
 `;
 const Searchli = styled(motion.li)`
   list-style: none;

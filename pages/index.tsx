@@ -8,6 +8,7 @@ import { NewsList } from "../api/naverApi";
 import { IGetNewsListResult } from "./../api/naverApi";
 import News from "../components/News";
 import Link from "next/link";
+import { getCookie } from "../common/utills";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
@@ -94,7 +95,6 @@ export default function Main() {
     NewsList,
     { refetchOnWindowFocus: false, staleTime: 5000 }
   );
-
   return (
     <Container id="ctn">
       <Seo title="간택당한 집사s" />

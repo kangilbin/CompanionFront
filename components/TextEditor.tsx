@@ -166,7 +166,6 @@ export default function TextEditor() {
   const onValid = () => {
     const requestObj = {
       id: moment().format("YYYYMMDDHHmmss"),
-      user_id: "jacob",
       title: title,
       content: quillRef.current?.editor.getText(),
       img: JSON.stringify(img),

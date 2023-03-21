@@ -42,6 +42,7 @@ const ShelterInfo = styled.ul`
   margin-top: 20px;
   border-radius: 20px;
   padding: 10px;
+  list-style-type: none;
 `;
 const AnimalCTT = styled.li`
   padding-top: 10px;
@@ -96,7 +97,7 @@ export default function AnimalDetail() {
               }}
             />
             <BigOverview>
-              <ul>
+              <ul style={{ listStyleType: "none", padding: "0" }}>
                 <AnimalCTT>
                   <div
                     style={{

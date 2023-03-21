@@ -174,7 +174,7 @@ export default function NavBar() {
   const [isOpenInfo, setIsOpenInfo] = useState(false);
   const ref = useRef<any>();
   useEffect(() => {
-    setInfo(getCookie("userInfo"));
+    setInfo(getCookie("token"));
   }, []);
 
   return (
@@ -236,9 +236,7 @@ export default function NavBar() {
                 //onClick={onClickSort}
               >
                 <InfoItem>계정정보</InfoItem>
-                <InfoItem
-                  onClick={() => removeCookie("userInfo", { path: "/" })}
-                >
+                <InfoItem onClick={() => removeCookie("token", { path: "/" })}>
                   로그아웃
                 </InfoItem>
               </InfoList>

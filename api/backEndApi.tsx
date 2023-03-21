@@ -15,7 +15,7 @@ export async function communityWrite(param: any) {
       },
       {
         headers: {
-          Authorization: getCookie("userInfo").token,
+          Authorization: `Bearer ${getCookie("token")}`,
         },
       }
     )
@@ -89,7 +89,7 @@ export async function commentInsert(obj: any) {
       },
       {
         headers: {
-          Authorization: getCookie("userInfo").token,
+          Authorization: `Bearer ${getCookie("token")}`,
         },
       }
     )
@@ -111,7 +111,7 @@ export async function login({ id, pw }: { id: string; pw: string }) {
       password: pw,
     })
     .then((response) => {
-      setCookie("userInfo", response.data, {
+      setCookie("token", response.data.token, {
         path: "/",
         sameSite: "strict",
       });

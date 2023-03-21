@@ -3,8 +3,9 @@ import styled from "styled-components";
 import Seo from "../components/Seo";
 import cat from "../public/img/cat.png";
 import { SlLock, SlUser } from "react-icons/sl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { login } from "../api/backEndApi";
+import { useQuery } from "@tanstack/react-query";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
@@ -120,9 +121,20 @@ const Error = styled.div`
 export default function Login() {
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
-  const [error, setError] = useState<any>();
+  const [error, setError] = useState(false);
+  const [isClick, setIsClick] = useState(false);
+  const { data, refetch } = useQuery<any>(
+    ["error", "login"],
+    () => login({ id, pw }),
+    { enabled: isClick, refetchOnWindowFocus: false }
+  );
+
+  useEffect(() => {
+    setError(data);
+  }, [data]);
+
   const onClickLogin = () => {
-    setError(login({ id, pw }));
+    isClick ? refetch() : setIsClick(true);
   };
   return (
     <Container>
