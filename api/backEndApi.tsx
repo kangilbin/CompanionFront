@@ -65,6 +65,17 @@ export async function communityRead(id: string) {
       }
     });
 }
+export async function likesIncrease(id: string) {
+  // return axios
+  //   .get(`${BOARD_PATH}/community/read/${id}`)
+  //   .then((response) => response.data)
+  //   .catch((error) => {
+  //     console.log("오류 발생 : ", error.response.status);
+  //     if (error.response.status === 404) {
+  //       //window.location.href = "/404";
+  //     }
+  //   });
+}
 
 // 커뮤니티 댓글 조회
 export async function communityComments(id: string) {
@@ -103,6 +114,73 @@ export async function commentInsert(obj: any) {
     });
 }
 
+// 댓글 삭제
+export async function commentDelete({
+  board_id,
+  parent_comment_id,
+  comment_id,
+}: {
+  board_id: string;
+  parent_comment_id?: number;
+  comment_id?: number;
+}) {
+  return axios
+    .put(
+      `${COMMENT_PATH}/del`,
+      {
+        board_id,
+        parent_comment_id,
+        comment_id,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getCookie("token")}`,
+        },
+      }
+    )
+    .then((response) => {
+      console.log(response.data);
+      return response.data;
+    })
+    .catch((error) => {
+      if (error.response.status === 404) {
+        //window.location.href = "/404";
+      } else if (error.response.status === 403) {
+        window.location.href = "/";
+      }
+    });
+}
+
+// 댓글 수정
+export async function commentUpdate(
+  comment_id?: number,
+  parent_comment_id?: number,
+  content?: string
+) {
+  return axios
+    .put(
+      `${COMMENT_PATH}/del`,
+      {
+        parent_comment_id,
+        comment_id,
+        content,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getCookie("token")}`,
+        },
+      }
+    )
+    .then((response) => response.data)
+    .catch((error) => {
+      if (error.response.status === 404) {
+        //window.location.href = "/404";
+      } else if (error.response.status === 403) {
+        window.location.href = "/";
+      }
+    });
+}
+
 // 로그인
 export async function login({ id, pw }: { id: string; pw: string }) {
   return axios
@@ -112,6 +190,10 @@ export async function login({ id, pw }: { id: string; pw: string }) {
     })
     .then((response) => {
       setCookie("token", response.data.token, {
+        path: "/",
+        sameSite: "strict",
+      });
+      setCookie("id", response.data.id, {
         path: "/",
         sameSite: "strict",
       });

@@ -25,48 +25,12 @@ const Grid = styled.div`
   padding-bottom: 50px;
 `;
 
-const Board = styled.div`
-  box-shadow: 3px 3px 5px 3px rgb(190 190 190);
-  border-radius: 20px;
-  margin: 20px;
-  width: 100%;
-  height: 100%;
-`;
-
 const SubText = styled.div`
   font-family: "Dongle", sans-serif;
   font-size: 1.5rem;
   justify-content: space-between;
   display: flex;
   padding: 5px;
-`;
-
-const BoardGrid = styled.div`
-  margin: 20px 0px 20px 0px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 350px;
-  grid-column: span 4;
-`;
-const BoardTitle = styled.div`
-  background-color: ${(props) => props.theme.pointColor};
-  border-radius: 20px 20px 0px 0px;
-  padding: 10px;
-  font-family: "Dongle", sans-serif;
-  font-size: 1.5rem;
-  color: ${(props) => props.theme.bgColor};
-  text-align: center;
-`;
-
-const BoardCtt = styled.li`
-  padding: 10px;
-  font-family: "Jua", sans-serif;
-  border-bottom: 1px solid ${(props) => props.theme.pointColor};
-  &:hover {
-    background-color: ${(props) => props.theme.btnColor};
-  }
-  cursor: pointer;
 `;
 
 const NewsGrid = styled.div`
@@ -115,18 +79,6 @@ export default function Main() {
               </SubText>
               <YouTubeList data={vData} />
             </div>
-            <BoardGrid>
-              <Board>
-                <BoardTitle>커뮤니티 인기글</BoardTitle>
-                <ul>
-                  <BoardCtt>1번 강아지가 멍멍</BoardCtt>
-                  <BoardCtt>2번 고양이가 냥냥</BoardCtt>
-                  <BoardCtt>3번 강아지가 으르렁</BoardCtt>
-                  <BoardCtt>4번 고양이가 야옹야옹</BoardCtt>
-                  <BoardCtt>5번 나는 힘들어</BoardCtt>
-                </ul>
-              </Board>
-            </BoardGrid>
           </Grid>
           <Grid>
             <div style={{ gridColumn: "span 4" }}>

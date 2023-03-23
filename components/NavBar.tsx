@@ -236,7 +236,12 @@ export default function NavBar() {
                 //onClick={onClickSort}
               >
                 <InfoItem>계정정보</InfoItem>
-                <InfoItem onClick={() => removeCookie("token", { path: "/" })}>
+                <InfoItem
+                  onClick={() => {
+                    removeCookie("token", { path: "/" });
+                    removeCookie("id", { path: "/" });
+                  }}
+                >
                   로그아웃
                 </InfoItem>
               </InfoList>

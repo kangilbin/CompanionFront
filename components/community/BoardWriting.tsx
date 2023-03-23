@@ -16,7 +16,7 @@ const ReactQuill2 = dynamic(
 const CustomReactQuill = styled(ReactQuill2)`
   margin: 30px 0px;
   padding-bottom: 30px;
-  border-bottom: solid 1px ${(props) => props.theme.pointColor};
+  //border-bottom: solid 1px ${(props) => props.theme.pointColor};
   & > div {
     border: none !important;
   }

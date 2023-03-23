@@ -4,6 +4,9 @@ import {
   commentInsert,
   communityComments,
   communityRead,
+  likesIncrease,
+  commentDelete,
+  commentUpdate,
 } from "../../api/backEndApi";
 import Loader from "../../components/Loader";
 import Seo from "../../components/Seo";
@@ -11,7 +14,7 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { BiTime } from "react-icons/bi";
 import { AiOutlineEye, AiOutlineLike, AiOutlineComment } from "react-icons/ai";
 import { CgMoreR } from "react-icons/cg";
-import { elapsedTime } from "./../../common/utills";
+import { elapsedTime, getCookie } from "./../../common/utills";
 import cat from "../../public/img/cat.png";
 import Image from "next/image";
 import BoardWriting from "../../components/community/BoardWriting";
@@ -175,6 +178,33 @@ const Reply = styled.div`
   width: 50%;
 `;
 
+const ReComment = styled.div`
+  font-family: "Noto Sans KR";
+  color: ${(props) => props.theme.pointColor};
+  text-decoration: underline;
+  text-underline-position: under;
+  cursor: pointer;
+`;
+
+const LikesBtn = styled.div`
+  text-align: center;
+  border-bottom: solid 1px ${(props) => props.theme.pointColor};
+  padding-bottom: 30px;
+  margin: 30px 0px;
+  & > svg {
+    height: 3rem;
+    width: 3rem;
+    padding: 10px;
+    color: ${(props) => props.theme.pointColor};
+    cursor: pointer;
+    border: 3px solid ${(props) => props.theme.btnColor};
+    border-radius: 15px;
+  }
+  & > svg:hover {
+    color: ${(props) => props.theme.stPointColor};
+  }
+`;
+
 const moreVariants = {
   initial: { opacity: 0, scale: 0 },
   visible: { opacity: 1, scale: 1, y: -10, x: -20 },
@@ -194,7 +224,6 @@ export default function Read({
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const [isReply, setIsReply] = useState(false);
-  const [isReplyOpen, setISReplyOpen] = useState(false);
   const [commentId, setCommentId] = useState<ICommentId | null>({
     parent_comment_id: 0,
     comment_id: 0,
@@ -202,7 +231,6 @@ export default function Read({
   const [targetSize, setTargetSize] = useState<any>(null);
   const outside = useRef<HTMLDivElement>(null);
   const outReplay = useRef<HTMLDivElement>(null);
-
   const results = useQueries({
     queries: [
       {
@@ -221,6 +249,42 @@ export default function Read({
   const mutation = useMutation(
     ({ type, parent_comment_id, content }: any) =>
       commentInsert({ type, board_id: params.id, parent_comment_id, content }),
+    {
+      onSuccess: (data) => {
+        queryClient.setQueryData(["comment", "select"], data);
+        setIsReply(false);
+        setComment("");
+      },
+    }
+  );
+
+  const likesmut = useMutation((id: string) => likesIncrease(id), {
+    onSuccess: (data) => {
+      alert("해당 글을 추천합니다!");
+    },
+  });
+
+  const delMut = useMutation(
+    () =>
+      commentDelete({
+        board_id: params.id,
+        parent_comment_id: commentId?.parent_comment_id,
+        comment_id: commentId?.comment_id,
+      }),
+    {
+      onSuccess: (data) => {
+        queryClient.setQueryData(["comment", "select"], data);
+      },
+    }
+  );
+
+  const modMut = useMutation(
+    () =>
+      commentUpdate(
+        commentId?.parent_comment_id,
+        commentId?.comment_id,
+        comment
+      ),
     {
       onSuccess: (data) => {
         queryClient.setQueryData(["comment", "select"], data);
@@ -270,13 +334,6 @@ export default function Read({
     setTargetSize(opt);
   };
 
-  useEffect(() => {
-    if (!!commentId && commentId.comment_id === 0) {
-      setISReplyOpen(true);
-    } else {
-      setISReplyOpen(false);
-    }
-  }, [commentId]);
   const moreBtnClick = (
     event: React.FormEvent<HTMLSpanElement>,
     parent_comment_id: number,
@@ -284,6 +341,14 @@ export default function Read({
   ) => {
     targetFind(event);
     setCommentId({ parent_comment_id, comment_id });
+  };
+
+  const delComment = () => {
+    delMut.mutate();
+  };
+  const modComment = () => {
+    setIsReply(true);
+    //modMut.mutate();
   };
 
   return (
@@ -337,6 +402,9 @@ export default function Read({
             </GirdTTLSub2>
           </GridTTL>
           <BoardWriting data={results[0].data.dom} />
+          <LikesBtn>
+            <AiOutlineLike />
+          </LikesBtn>
           <div>
             {results[1].data.length ? (
               <div style={{ marginBottom: "30px" }}>
@@ -361,29 +429,51 @@ export default function Read({
                   ele.push(
                     <CommentList key={i}>
                       <CommentUser>
-                        <span>{item.user_id}</span>
-                        <MoreBTN
-                          onClick={(event) =>
-                            moreBtnClick(
-                              event,
-                              item.parent_comment_id,
-                              item.comment_id
-                            )
-                          }
-                          ref={outside}
-                        >
-                          <CgMoreR />
-                        </MoreBTN>
+                        <span>{item.nickname}</span>
+                        {item.user_id === getCookie("id") && (
+                          <>
+                            <MoreBTN
+                              onClick={(event) =>
+                                moreBtnClick(
+                                  event,
+                                  item.parent_comment_id,
+                                  item.comment_id
+                                )
+                              }
+                              ref={outside}
+                            >
+                              <CgMoreR />
+                            </MoreBTN>
+                          </>
+                        )}
                       </CommentUser>
                       <CommentCTT>{item.content}</CommentCTT>
-                      <CommentTime>
-                        <BiTime
-                          style={{
-                            padding: "0px 5px",
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <CommentTime>
+                          <BiTime
+                            style={{
+                              padding: "0px 5px",
+                            }}
+                          />
+                          {elapsedTime(item.dt)}
+                        </CommentTime>
+                        <ReComment
+                          onClick={() => {
+                            setIsReply(true);
+                            setCommentId({
+                              parent_comment_id: item.parent_comment_id,
+                              comment_id: item.comment_id,
+                            });
                           }}
-                        />
-                        {elapsedTime(item.dt)}
-                      </CommentTime>
+                        >
+                          답글 쓰기
+                        </ReComment>
+                      </div>
                     </CommentList>
                   );
                   change = item.parent_comment_id;
@@ -391,19 +481,23 @@ export default function Read({
                   ele.push(
                     <CommentRe key={i}>
                       <CommentUser>
-                        <span>{item.user_id}</span>
-                        <MoreBTN
-                          onClick={(event) =>
-                            moreBtnClick(
-                              event,
-                              item.parent_comment_id,
-                              item.comment_id
-                            )
-                          }
-                          ref={outside}
-                        >
-                          <CgMoreR />
-                        </MoreBTN>
+                        <span>{item.nickname}</span>
+                        {item.user_id === getCookie("id") && (
+                          <>
+                            <MoreBTN
+                              onClick={(event) =>
+                                moreBtnClick(
+                                  event,
+                                  item.parent_comment_id,
+                                  item.comment_id
+                                )
+                              }
+                              ref={outside}
+                            >
+                              <CgMoreR />
+                            </MoreBTN>
+                          </>
+                        )}
                       </CommentUser>
                       <CommentCTT>{item.content}</CommentCTT>
                       <CommentTime>
@@ -429,17 +523,8 @@ export default function Read({
                   exit="leaving"
                   {...targetSize}
                 >
-                  {isReplyOpen && (
-                    <MoreBtnLi
-                      onClick={() => {
-                        setIsReply(true);
-                      }}
-                    >
-                      답글
-                    </MoreBtnLi>
-                  )}
-                  <MoreBtnLi>수정</MoreBtnLi>
-                  <MoreBtnLi>삭제</MoreBtnLi>
+                  <MoreBtnLi onClick={modComment}>수정</MoreBtnLi>
+                  <MoreBtnLi onClick={delComment}>삭제</MoreBtnLi>
                 </MoreBtnUl>
               )}
             </AnimatePresence>
