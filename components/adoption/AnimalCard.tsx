@@ -23,13 +23,9 @@ const Item = styled(motion.div)`
     box-shadow: 3px 3px 5px 3px rgb(184 229 240);
   }
 `;
-const Img = styled.div<{ url: string }>`
-  background-image: url(${(props) => props.url});
-  background-size: cover;
+const Img = styled.img`
   cursor: pointer;
   font-size: 66px;
-  background-size: cover;
-  background-position: center center;
   width: 100%;
   aspect-ratio: 1/1;
   border-radius: 15px 15px 0px 0px;
@@ -50,7 +46,7 @@ export default function AnimalCard({ data }: IProps) {
           onClick={() => setAnimal(animal)}
           layoutId={animal.desertionNo}
         >
-          <Img url={animal.popfile} />
+          <Img src={animal.popfile} />
           <Descript>
             <div>
               <DescriptTTL>접수일</DescriptTTL>

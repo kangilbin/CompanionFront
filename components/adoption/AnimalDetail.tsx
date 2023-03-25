@@ -13,9 +13,9 @@ const Overlay = styled(motion.div)`
   right: 0;
   background: rgba(0, 0, 0, 0.5);
 `;
-const BigCard = styled(motion.div)`
+const BigCard = styled(motion.div)<{ y: number }>`
   position: absolute;
-
+  top: ${(props) => props.y - 310}px;
   left: 0;
   right: 0;
   margin: 0 auto;
@@ -24,17 +24,18 @@ const BigCard = styled(motion.div)`
   background-color: white;
   display: flex;
   flex-direction: column;
-  aspect-ratio: 1/1;
-  height: 90vh;
+  height: 95vh;
   max-width: 95%;
+  @media screen and (min-width: 1200px) {
+    width: 30vw;
+    top: ${(props) => props.y - 140}px;
+  }
 `;
-const BigCover = styled.div`
-  background-size: cover;
-  height: 100%;
+const BigCover = styled.img`
+  width: 100%;
 `;
 const BigOverview = styled.div`
   padding: 15px;
-  height: 50%;
   overflow: auto;
 `;
 const ShelterInfo = styled.ul`
@@ -85,17 +86,13 @@ export default function AnimalDetail() {
             onClick={outSideClick}
           />
           <BigCard
-            style={{ top: scrollY.get() - 100 }}
             layoutId={isAnimal?.desertionNo}
             ref={ref}
+            y={Math.round(scrollY.get())}
           >
-            <BigCover
-              style={{
-                backgroundImage: `url(${isAnimal?.popfile})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center center",
-              }}
-            />
+            <div>
+              <BigCover src={isAnimal?.popfile} />
+            </div>
             <BigOverview>
               <ul style={{ listStyleType: "none", padding: "0" }}>
                 <AnimalCTT>

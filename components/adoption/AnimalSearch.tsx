@@ -34,6 +34,7 @@ const SearchBtn = styled(motion.button)`
   -webkit-appearance: button;
   margin-top: 1.5rem;
   background: #fafafa;
+  color: black;
   border: none;
   border-radius: 10px;
   padding: 10px 20px;

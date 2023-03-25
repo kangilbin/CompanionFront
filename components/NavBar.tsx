@@ -105,6 +105,7 @@ const LoginBtn = styled.button`
   border: none;
   border-radius: 15px;
   cursor: pointer;
+  color: black;
   &:hover {
     color: ${(props) => props.theme.btnColor};
   }
