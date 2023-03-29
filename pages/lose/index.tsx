@@ -9,6 +9,7 @@ import Loader from "./../../components/Loader";
 import { useEffect, useState, useRef } from "react";
 import { AnimatePresence, motion, useScroll } from "framer-motion";
 import BoardCard from "../../components/community/BoardCard";
+import DatePicker from "../../components/DatePicker";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
@@ -77,20 +78,24 @@ const Input = styled.input`
   font-family: auto;
 `;
 
-const Sort = styled.div`
-  box-shadow: 0 1px 2px rgb(0 0 0 / 20%);
+const Search = styled.div`
   padding: 8px;
   cursor: pointer;
   border-radius: 5px;
-  font-weight: bold;
-  font-family: "Noto Sans KR";
+  & > svg {
+    height: 1.5rem;
+    width: 1.5rem;
+  }
+  &:hover {
+    color: ${(props) => props.theme.pointColor};
+  }
 `;
 
 const Grid = styled.div`
   border-top: dotted ${(props) => props.theme.pointColor};
 `;
 
-const SortList = styled(motion.ul)`
+const SearchData = styled(motion.div)`
   position: absolute;
   margin-top: 10px;
   box-shadow: 0 1px 2px rgb(0 0 0 / 20%);
@@ -99,28 +104,55 @@ const SortList = styled(motion.ul)`
   z-index: 1;
   background: white;
   list-style-type: none;
-  padding: 0px;
-`;
-
-const Sortli = styled.li`
-  padding: 10px 18px;
-  border-bottom: 1px solid #d6d6d6;
-  &:hover {
-    border-bottom: 1px solid ${(props) => props.theme.pointColor};
-    color: #00c3ff;
-    font-weight: bold;
-  }
+  width: 300px;
 `;
 
 const Title = styled.span`
-  font-size: 1.5rem;
-  font-family: "Jua";
+  font-family: "Noto Sans KR";
+  gap: 10px;
+  display: flex;
+`;
+const TargetType = styled.span`
+  box-shadow: 0 1px 2px rgb(0 0 0 / 20%);
+  cursor: pointer;
+  border-radius: 15px;
+  font-weight: bold;
+  padding: 0.3rem;
+
+  &:hover {
+    box-shadow: 0 1px 2px rgb(184 229 240);
+  }
+`;
+const SearchText = styled.div`
+  color: ${(props) => props.theme.btnColor};
+  padding: 5px;
+`;
+const SelectBox = styled.select`
+  border-radius: 10px;
+  padding: 3px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  border: none;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 20%);
+  text-align: center;
+`;
+const SearchBtn = styled.button`
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: white;
+  background-color: #00c3ff;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  &:active {
+    background-color: #8ecbde;
+  }
 `;
 
-const sortVariants = {
+const searchVariants = {
   initial: { opacity: 0, scale: 0 },
-  visible: { opacity: 1, scale: 1 },
-  leaving: { opacity: 0, scale: 0, y: -30 },
+  visible: { opacity: 1, scale: 1, x: -250 },
+  leaving: { opacity: 0, scale: 0, y: -100 },
 };
 
 export default function Community() {
@@ -129,6 +161,7 @@ export default function Community() {
   const [isSort, setIsSort] = useState(false);
   const [sortText, setSortText] = useState("최신순");
   const [sort, setSort] = useState("reg_time");
+  const [searchData, setSearchData] = useState("ALL");
   const outside = useRef<HTMLDivElement>(null);
 
   const { isLoading, data, fetchNextPage, refetch } = useInfiniteQuery<any>(
@@ -170,58 +203,72 @@ export default function Community() {
           setIsSort(false);
       }}
     >
-      <Seo title="커뮤니티s" />
+      <Seo title="찾습니다s" />
       {isLoading ? (
         <Loader />
       ) : (
         <Grid>
           <GridHead>
-            <Link href="/community/write" legacyBehavior>
+            <Link href="/lose/write" legacyBehavior>
               <Page>
                 <SlPencil style={{ marginRight: "5px" }} />
                 작성하기
               </Page>
             </Link>
-            <Title>커뮤니티</Title>
+            <Title>
+              <TargetType
+                className={searchData === "ALL" ? "sort_active" : ""}
+                onClick={() => setSearchData("ALL")}
+              >
+                전체
+              </TargetType>
+              <TargetType
+                className={searchData === "MISS" ? "sort_active" : ""}
+                onClick={() => setSearchData("MISS")}
+              >
+                실종
+              </TargetType>
+              <TargetType
+                className={searchData === "PRT" ? "sort_active" : ""}
+                onClick={() => setSearchData("PRT")}
+              >
+                보호
+              </TargetType>
+              <TargetType
+                className={searchData === "LOOK" ? "sort_active" : ""}
+                onClick={() => setSearchData("LOOK")}
+              >
+                목격
+              </TargetType>
+            </Title>
             <div>
-              <Sort onClick={() => setIsSort((prev) => !prev)}>
-                <HiSortDescending style={{ marginRight: "5px" }} />
-                <span>{sortText}</span>
-              </Sort>
+              <Search onClick={() => setIsSort((prev) => !prev)}>
+                <HiSearch />
+              </Search>
               <AnimatePresence>
                 {isSort && (
-                  <SortList
-                    variants={sortVariants}
+                  <SearchData
+                    variants={searchVariants}
                     initial="initial"
                     animate="visible"
                     exit="leaving"
-                    onClick={onClickSort}
+                    ref={outside}
                   >
-                    <Sortli
-                      value="reg_time"
-                      className={sort === "reg_time" ? "sort_active" : ""}
-                    >
-                      최신순
-                    </Sortli>
-                    <Sortli
-                      value="hits"
-                      className={sort === "hits" ? "sort_active" : ""}
-                    >
-                      조회순
-                    </Sortli>
-                    <Sortli
-                      value="likes"
-                      className={sort === "likes" ? "sort_active" : ""}
-                    >
-                      추천순
-                    </Sortli>
-                    <Sortli
-                      value="comments"
-                      className={sort === "comments" ? "sort_active" : ""}
-                    >
-                      댓글순
-                    </Sortli>
-                  </SortList>
+                    <div style={{ padding: "10px" }}>
+                      <SearchText>기간</SearchText>
+                      <DatePicker />
+                      <SearchText>지역</SearchText>
+                      <div>
+                        <SelectBox>
+                          <option>전체</option>
+                        </SelectBox>
+                        <SelectBox>
+                          <option>전체</option>
+                        </SelectBox>
+                      </div>
+                    </div>
+                    <SearchBtn>검색</SearchBtn>
+                  </SearchData>
                 )}
               </AnimatePresence>
             </div>

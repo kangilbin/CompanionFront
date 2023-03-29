@@ -30,6 +30,10 @@ class MyDocument extends Document {
             httpEquiv="Content-Security-Policy"
             content="upgrade-insecure-requests"
           ></meta>
+          <script
+            src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"
+            async
+          />
         </Head>
         <body>
           <Main />

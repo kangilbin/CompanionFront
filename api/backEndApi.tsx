@@ -226,7 +226,7 @@ export interface IJoin {
   user_name: string;
   id: string;
   nickname: string;
-  phone: number;
+  phone: string;
   password: string;
   addr?: string;
   zip_no?: string;

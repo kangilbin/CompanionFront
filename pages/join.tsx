@@ -121,16 +121,25 @@ interface IForm {
   name: string;
   id: string;
   nickname: string;
-  phone: number;
+  phone: string;
   password: string;
   password2: string;
   addr?: string;
   zipNo?: string;
   addrDetail?: string;
 }
-
+declare global {
+  interface Window {
+    daum: any;
+  }
+}
+interface IAddr {
+  address: string;
+  zonecode: string;
+}
 export default function Join() {
-  const { register, handleSubmit, setError, getValues } = useForm<IForm>();
+  const { register, handleSubmit, setError, getValues, setValue } =
+    useForm<IForm>();
   const [isDupOpen, setIsDupOpen] = useState(false);
   const { data, refetch } = useQuery<any>(["nickname", "check"], () =>
     duplicate(getValues("nickname"))
@@ -169,6 +178,20 @@ export default function Join() {
       refetch();
       setIsDupOpen(true);
     }
+  };
+
+  const onClickAddr = () => {
+    new window.daum.Postcode({
+      oncomplete: function (data: IAddr) {
+        (document.getElementById("addr") as HTMLInputElement).value =
+          data.address;
+        (document.getElementById("zipNo") as HTMLInputElement).value =
+          data.zonecode;
+        setValue("addr", data.address);
+        setValue("zipNo", data.zonecode);
+        document.getElementById("addrDetail")?.focus();
+      },
+    }).open();
   };
 
   return (
@@ -258,23 +281,24 @@ export default function Join() {
           <ItemBox>
             <Label htmlFor="addr">주소</Label>
             <Input
-              width="80%"
-              id="addr"
-              type="text"
               readOnly
+              id="addr"
+              width="80%"
+              type="text"
               {...register("addr")}
+              onClick={onClickAddr}
             />
             <BtnBox>
-              <Btn>검색</Btn>
+              <Btn onClick={onClickAddr}>검색</Btn>
             </BtnBox>
           </ItemBox>
           <ItemBox>
             <Label htmlFor="zipNo">우편번호</Label>
             <Input
+              readOnly
               width="100%"
               id="zipNo"
               type="text"
-              readOnly
               {...register("zipNo")}
             />
           </ItemBox>

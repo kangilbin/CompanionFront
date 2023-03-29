@@ -90,6 +90,7 @@ const LoginPw = styled.div`
 const Input = styled.input`
   border: none;
   height: 30px;
+  font-family: auto;
   margin-left: 10px;
   outline: none;
   width: 90%;
@@ -136,6 +137,11 @@ export default function Login() {
   const onClickLogin = () => {
     isClick ? refetch() : setIsClick(true);
   };
+  const handleOnKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      onClickLogin();
+    }
+  };
   return (
     <Container>
       <Seo title="로그인s" />
@@ -163,6 +169,7 @@ export default function Login() {
               <Input
                 placeholder="아이디"
                 onChange={(e) => setId(e.currentTarget.value)}
+                onKeyPress={handleOnKeyPress}
               />
             </LoginId>
             <LoginPw>
@@ -176,6 +183,7 @@ export default function Login() {
                 placeholder="비밀번호"
                 type="password"
                 onChange={(e) => setPw(e.currentTarget.value)}
+                onKeyPress={handleOnKeyPress}
               />
             </LoginPw>
           </div>

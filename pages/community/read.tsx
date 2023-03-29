@@ -358,7 +358,7 @@ export default function Read({
           setIsOpen(false);
       }}
     >
-      <Seo title="간택당한 집사s" />
+      <Seo title="커뮤니티s" />
       {isLoading ? (
         <Loader />
       ) : (
