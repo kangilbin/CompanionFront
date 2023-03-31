@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import Seo from "../../components/Seo";
-import { MdOutlinePhotoCamera } from "react-icons/md";
+import { MdOutlinePhotoCamera, MdGpsFixed } from "react-icons/md";
 import { ImCancelCircle } from "react-icons/im";
+import { HiSearch } from "react-icons/hi";
 import { useEffect, useState } from "react";
 import useDidMountEffect from "./../../hooks/useDidMountEffect";
 
@@ -71,6 +72,14 @@ const Text = styled.span`
   color: #888;
   font-family: "Jua";
 `;
+const InputAddr = styled.input`
+  width: -webkit-fill-available;
+  border-radius: 0.5rem;
+  border: 1px solid gainsboro;
+  margin: 10px 0px;
+  padding: 10px;
+`;
+
 declare global {
   interface Window {
     kakao: any;
@@ -78,6 +87,8 @@ declare global {
 }
 export default function Write() {
   const [map, setMap] = useState<any>();
+  const [marker, setMarker] = useState<any>();
+  const [data, setData] = useState<any>();
 
   useEffect(() => {
     window.kakao.maps.load(() => {
@@ -87,6 +98,7 @@ export default function Write() {
         level: 3,
       };
       setMap(new window.kakao.maps.Map(container, options));
+      setMarker(new window.kakao.maps.Marker());
     });
   }, []);
 
@@ -95,60 +107,44 @@ export default function Write() {
       map,
       "click",
       function (mouseEvent: any) {
-        var marker = new window.kakao.maps.Marker();
-        var infowindow = new window.kakao.maps.InfoWindow({ zindex: 1 });
         // 주소-좌표 변환 객체를 생성합니다
         var geocoder = new window.kakao.maps.services.Geocoder();
+
         geocoder.coord2Address(
           mouseEvent.latLng.getLng(),
           mouseEvent.latLng.getLat(),
           (result: any, status: any) => {
             if (status === window.kakao.maps.services.Status.OK) {
-              var detailAddr = !!result[0].road_address
-                ? "<div>도로명주소 : " +
-                  result[0].road_address.address_name +
-                  "</div>"
-                : "";
-              detailAddr +=
-                "<div>지번 주소 : " + result[0].address.address_name + "</div>";
+              var addr = !!result[0].road_address
+                ? result[0].road_address.address_name
+                : result[0].address.address_name;
+              (document.getElementById("addr") as HTMLInputElement).value =
+                addr;
 
-              var content =
-                '<div class="bAddr">' +
-                '<span class="title">법정동 주소정보</span>' +
-                detailAddr +
-                "</div>";
+              setData((prev: any) => ({
+                ...prev,
+                addr,
+                sido: result[0].address.region_2depth_name,
+                sigungu: result[0].address.region_3depth_name,
+                dong: result[0].address.region_3depth_name,
+                latitude: mouseEvent.latLng.getLat(),
+                longitude: mouseEvent.latLng.getLng(),
+              }));
 
+              marker.setMap(null);
               // 마커를 클릭한 위치에 표시합니다
               marker.setPosition(mouseEvent.latLng);
               marker.setMap(map);
-
-              infowindow.setContent(content);
-              infowindow.open(map, marker);
             }
           }
         );
       }
     );
   }, [map]);
+
   function getCurrentPosBtn() {
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        // 현재 위치(위도, 경도) 가져온다.
-        var currentPos = new window.kakao.maps.LatLng(
-          pos.coords.latitude, // 위도
-          pos.coords.longitude // 경도
-        );
-        // 지도를 이동 시킨다.
-        map.panTo(currentPos);
-
-        // 마커 생성
-        var marker = new window.kakao.maps.Marker({
-          position: currentPos,
-        });
-        // 기존 마커를 제거하고 새로운 마커를 넣는다.
-        marker.setMap(null);
-        marker.setMap(map);
-      },
+      getPosSuccess,
       () => alert("위치 정보를 가져오는데 실패했습니다."),
       {
         enableHighAccuracy: true,
@@ -157,7 +153,56 @@ export default function Write() {
       }
     );
   }
+  const getPosSuccess = (pos: GeolocationPosition) => {
+    // 현재 위치(위도, 경도) 가져온다.
+    var currentPos = new window.kakao.maps.LatLng(
+      pos.coords.latitude, // 위도
+      pos.coords.longitude // 경도
+    );
+    // 지도를 이동 시킨다.
+    map.panTo(currentPos);
 
+    var geocoder = new window.kakao.maps.services.Geocoder();
+    geocoder.coord2Address(
+      currentPos.La,
+      currentPos.Ma,
+      (result: any, status: any) => {
+        if (status === window.kakao.maps.services.Status.OK) {
+          var addr = !!result[0].road_address
+            ? result[0].road_address.address_name
+            : result[0].address.address_name;
+
+          (document.getElementById("addr") as HTMLInputElement).value = addr;
+
+          setData((prev: any) => ({
+            ...prev,
+            addr,
+            sido: result[0].address.region_2depth_name,
+            sigungu: result[0].address.region_3depth_name,
+            dong: result[0].address.region_3depth_name,
+            latitude: currentPos.La,
+            longitude: currentPos.Ma,
+          }));
+        }
+      }
+    );
+
+    // 기존 마커를 제거하고 새로운 마커를 넣는다.
+    marker.setMap(null);
+    marker.setPosition(currentPos);
+    marker.setMap(map);
+  };
+
+  const onChangeTTL = (event: React.FormEvent<HTMLInputElement>) => {
+    const {
+      currentTarget: { value },
+    } = event;
+
+    setData((prev: any) => ({
+      ...prev,
+      title: value,
+    }));
+  };
   return (
     <Container>
       <script
@@ -169,7 +214,7 @@ export default function Write() {
       <Grid>
         <Box>
           <div>
-            <Text>제목</Text> <Title type="text" />
+            <Text>제목</Text> <Title type="text" onChange={onChangeTTL} />
           </div>
           <div>
             <MdOutlinePhotoCamera />
@@ -185,7 +230,15 @@ export default function Write() {
             </ImgBigBox>
           </div>
           <CTT placeholder="내용을 입력해 주세요." />
-          <div id="map" style={{ width: "500px", height: "400px" }}></div>
+          <div>
+            <InputAddr id="addr" disabled />
+            <div>
+              <MdGpsFixed />
+              <HiSearch />
+            </div>
+          </div>
+
+          <div id="map" style={{ width: "100%", height: "400px" }}></div>
           <button onClick={getCurrentPosBtn}>완료</button>
         </Box>
       </Grid>
