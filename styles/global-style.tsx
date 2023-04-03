@@ -102,4 +102,14 @@ abbr[title] {
   height: 100%;
   overflow: hidden;
 }
+input, textarea {
+  border: 1px solid #dddddd !important;
+  letter-spacing: -0.04rem;
+  &:focus {
+    outline: 2px solid #abe2f3;
+  }
+  &::placeholder {
+    color: #e2e2e2;
+  }
+}
 `;
