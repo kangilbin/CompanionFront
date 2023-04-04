@@ -1,8 +1,10 @@
 import axios from "axios";
 import { getCookie, setCookie } from "../common/utills";
+import moment from "moment";
 
 const BOARD_PATH = "/board";
 const COMMENT_PATH = "/comment";
+const LOSE_PATH = "/lose";
 const AUTH_PATH = "/auth";
 
 // 커뮤니티 글 등록
@@ -245,6 +247,84 @@ export async function join(param: IJoin) {
         //window.location.href = "/404";
       } else if (error.response.status === 400) {
         alert(error.response.data.error);
+      }
+    });
+}
+
+export interface ISBoard {
+  title: string;
+  ctt: string;
+  type: string;
+  sido?: string;
+  sigungu?: string;
+  dong?: string;
+  addr?: string;
+  img?: [];
+  date: string;
+  latitude?: string;
+  longitude?: string;
+}
+
+// 찾습니다 게시판 글 등록
+export async function loseInsert(param: ISBoard) {
+  return axios
+    .post(
+      `${BOARD_PATH}/lose/write`,
+      {
+        id: moment().format("YYYYMMDDHHmmss"),
+        title: param.title,
+        ctt: param.ctt,
+        type: param.type,
+        sido: param.sido,
+        sigungu: param.sigungu,
+        dong: param.dong,
+        addr: param.addr,
+        img: JSON.stringify(param.img),
+        date: param.date,
+        latitude: param.latitude,
+        longitude: param.longitude,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getCookie("token")}`,
+        },
+      }
+    )
+    .then(() => {
+      alert("작성 완료");
+      window.location.href = "/lose";
+    })
+    .catch((error) => {
+      if (error.response.status === 404) {
+        //window.location.href = "/404";
+      } else if (error.response.status === 400) {
+        alert(error.response.data.error);
+      }
+    });
+}
+
+// 찾습니다 게시글 목록 조회
+export async function loseList(
+  keyword: string,
+  page: number,
+  type: string,
+  start: string,
+  end: string,
+  sido: string,
+  sigungu: string
+) {
+  return axios
+    .get(`${BOARD_PATH}/lose/list`, {
+      params: { keyword, page, type, start, end, sido, sigungu },
+    })
+    .then((response) => {
+      const obj = { data: response.data, page };
+      return obj;
+    })
+    .catch((error) => {
+      console.log("오류 발생 : ", error.response.status);
+      if (error.response.status === 404) {
+        //window.location.href = "/404";
       }
     });
 }

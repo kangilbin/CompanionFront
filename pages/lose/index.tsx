@@ -1,15 +1,16 @@
 import styled from "styled-components";
 import Link from "next/link";
 import { SlPencil } from "react-icons/sl";
-import { HiSearch, HiSortDescending } from "react-icons/hi";
+import { HiSearch } from "react-icons/hi";
 import Seo from "./../../components/Seo";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { communityList } from "../../api/backEndApi";
+import { loseList } from "../../api/backEndApi";
 import Loader from "./../../components/Loader";
 import { useEffect, useState, useRef } from "react";
 import { AnimatePresence, motion, useScroll } from "framer-motion";
-import BoardCard from "../../components/community/BoardCard";
 import DatePicker from "../../components/DatePicker";
+import SBoardCard from "../../components/lose/SBoardCard";
+import { area } from "../../common/utills";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
@@ -105,6 +106,7 @@ const SearchData = styled(motion.div)`
   background: white;
   list-style-type: none;
   width: 300px;
+  overflow: hidden;
 `;
 
 const Title = styled.span`
@@ -126,6 +128,7 @@ const TargetType = styled.span`
 const SearchText = styled.div`
   color: ${(props) => props.theme.btnColor};
   padding: 5px;
+  margin-top: 5px;
 `;
 const SelectBox = styled.select`
   border-radius: 10px;
@@ -157,21 +160,39 @@ const searchVariants = {
 
 export default function Community() {
   const { scrollYProgress } = useScroll();
-  const [keyword, setKeyword] = useState("");
   const [isSort, setIsSort] = useState(false);
-  const [sortText, setSortText] = useState("최신순");
-  const [sort, setSort] = useState("reg_time");
-  const [searchData, setSearchData] = useState("ALL");
+  const [sigungu, setSigungu] = useState<any>([]);
+  const [searchOpt, setSearchOpt] = useState<any>({
+    keyword: "",
+    type: "",
+    start: "",
+    end: "",
+    sido: "",
+    sigungu: "",
+  });
   const outside = useRef<HTMLDivElement>(null);
-
+  // keyword, page, type, start, end, sido, sigungu
   const { isLoading, data, fetchNextPage, refetch } = useInfiniteQuery<any>(
-    ["community_list"],
-    ({ pageParam = 0 }) => communityList(pageParam, keyword, sort),
+    ["lose_list"],
+    ({ pageParam = 1 }) =>
+      loseList(
+        searchOpt.keyword,
+        pageParam,
+        searchOpt.type,
+        searchOpt.start,
+        searchOpt.end,
+        searchOpt.sido,
+        searchOpt.sigungu
+      ),
     {
       getNextPageParam: (lastPage) => lastPage.page + 1,
       refetchOnWindowFocus: false,
     }
   );
+  useEffect(() => {
+    refetch();
+  }, [searchOpt, refetch]);
+
   useEffect(() => {
     scrollYProgress.onChange(() => {
       if (scrollYProgress.get() > 0.9) {
@@ -180,22 +201,44 @@ export default function Community() {
     });
   }, [scrollYProgress, fetchNextPage]);
 
-  useEffect(() => {
-    refetch();
-  }, [sort, refetch]);
-  function onSubmit() {
-    refetch();
-  }
-  function onKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
-    if (event.key == "Enter") {
-      onSubmit();
-    }
-  }
-  function onClickSort(event: any) {
-    setSortText(event.target.innerText);
-    setSort(event.target.attributes[0].value);
+  const onChangeDate = (event: React.FormEvent<HTMLInputElement>) => {
+    const {
+      currentTarget: { value },
+    } = event;
+
+    setSearchOpt((prev: any) => ({
+      ...prev,
+      keyword: value,
+    }));
+  };
+
+  const onClickSearch = () => {
+    setSearchOpt((prev: any) => ({
+      ...prev,
+      start: (
+        document.getElementById("startDt") as HTMLInputElement
+      ).value.replace(/-/gi, ""),
+      end: (document.getElementById("endDt") as HTMLInputElement).value.replace(
+        /-/gi,
+        ""
+      ),
+      sido: (document.getElementById("sido") as HTMLSelectElement).value,
+      sigungu: (document.getElementById("sigungu") as HTMLSelectElement).value,
+    }));
     setIsSort(false);
-  }
+  };
+
+  const onChageSido = (event: React.FormEvent<HTMLSelectElement>) => {
+    const {
+      currentTarget: { value },
+    } = event;
+    if (value === "전체") {
+      setSigungu([]);
+    } else {
+      setSigungu(area.get(value));
+    }
+  };
+
   return (
     <Container
       onClick={(e: any) => {
@@ -217,26 +260,34 @@ export default function Community() {
             </Link>
             <Title>
               <TargetType
-                className={searchData === "ALL" ? "sort_active" : ""}
-                onClick={() => setSearchData("ALL")}
+                className={searchOpt.type === "" ? "sort_active" : ""}
+                onClick={() =>
+                  setSearchOpt((prev: any) => ({ ...prev, type: "" }))
+                }
               >
                 전체
               </TargetType>
               <TargetType
-                className={searchData === "MISS" ? "sort_active" : ""}
-                onClick={() => setSearchData("MISS")}
+                className={searchOpt.type === "MISS" ? "sort_active" : ""}
+                onClick={() =>
+                  setSearchOpt((prev: any) => ({ ...prev, type: "MISS" }))
+                }
               >
                 실종
               </TargetType>
               <TargetType
-                className={searchData === "PRT" ? "sort_active" : ""}
-                onClick={() => setSearchData("PRT")}
+                className={searchOpt.type === "PRT" ? "sort_active" : ""}
+                onClick={() =>
+                  setSearchOpt((prev: any) => ({ ...prev, type: "PRT" }))
+                }
               >
                 보호
               </TargetType>
               <TargetType
-                className={searchData === "LOOK" ? "sort_active" : ""}
-                onClick={() => setSearchData("LOOK")}
+                className={searchOpt.type === "LOOK" ? "sort_active" : ""}
+                onClick={() =>
+                  setSearchOpt((prev: any) => ({ ...prev, type: "LOOK" }))
+                }
               >
                 목격
               </TargetType>
@@ -258,33 +309,59 @@ export default function Community() {
                       <SearchText>기간</SearchText>
                       <DatePicker />
                       <SearchText>지역</SearchText>
-                      <div>
-                        <SelectBox>
+                      <div
+                        style={{
+                          justifyContent: "space-between",
+                          display: "flex",
+                        }}
+                      >
+                        <SelectBox onChange={onChageSido} id="sido">
                           <option>전체</option>
+                          <option>서울</option>
+                          <option>경기</option>
+                          <option>인천</option>
+                          <option>강원</option>
+                          <option>충북</option>
+                          <option>충남</option>
+                          <option>대전</option>
+                          <option>전북</option>
+                          <option>전남</option>
+                          <option>광주</option>
+                          <option>경북</option>
+                          <option>경남</option>
+                          <option>부산</option>
+                          <option>대구</option>
+                          <option>울산</option>
+                          <option>세종특별자치시</option>
+                          <option>제주특별자치도</option>
                         </SelectBox>
-                        <SelectBox>
-                          <option>전체</option>
+                        <SelectBox id="sigungu">
+                          <option value="">전체</option>
+                          {sigungu.map((item: any, i: number) => (
+                            <option value={item} key={i}>
+                              {item}
+                            </option>
+                          ))}
                         </SelectBox>
                       </div>
                     </div>
-                    <SearchBtn>검색</SearchBtn>
+                    <SearchBtn onClick={onClickSearch}>검색</SearchBtn>
                   </SearchData>
                 )}
               </AnimatePresence>
             </div>
           </GridHead>
           <GridSearch>
-            <HiSearch className="searchIcon" onClick={onSubmit} />
+            <HiSearch className="searchIcon" />
             <Input
               type="text"
               placeholder="Search..."
-              onKeyPress={onKeyPress}
-              onChange={(e) => setKeyword(e.currentTarget.value)}
+              onChange={onChangeDate}
             />
           </GridSearch>
           <GridBody>
             {data?.pages.map((page, i) => (
-              <BoardCard key={i} page={page} />
+              <SBoardCard key={i} page={page} />
             ))}
           </GridBody>
         </Grid>

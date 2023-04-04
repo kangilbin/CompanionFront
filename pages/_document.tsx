@@ -33,6 +33,11 @@ class MyDocument extends Document {
           <script
             src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"
             async
+          />{" "}
+          <script
+            type="text/javascript"
+            defer
+            src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=3ac433d8c7d59fc4a01d7669bd060a06&libraries=services&autoload=false`}
           />
         </Head>
         <body>

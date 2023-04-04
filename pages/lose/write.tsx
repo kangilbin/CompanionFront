@@ -1,10 +1,16 @@
 import styled from "styled-components";
 import Seo from "../../components/Seo";
-import { MdOutlinePhotoCamera, MdGpsFixed } from "react-icons/md";
+import { MdOutlinePhotoCamera, MdGpsFixed, MdDateRange } from "react-icons/md";
 import { ImCancelCircle } from "react-icons/im";
 import { HiSearch } from "react-icons/hi";
 import { useEffect, useState } from "react";
 import useDidMountEffect from "./../../hooks/useDidMountEffect";
+import moment from "moment";
+import { getCookie } from "../../common/utills";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../common/firebase";
+import { useMutation } from "@tanstack/react-query";
+import { ISBoard, loseInsert } from "../../api/backEndApi";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
@@ -72,8 +78,10 @@ const ImgBigBox = styled.div`
 const Text = styled.span`
   color: #888;
   font-family: "Jua";
+  white-space: nowrap;
+  margin-right: 10px;
 `;
-const InputAddr = styled.input`
+const Input = styled.input`
   width: -webkit-fill-available;
   border-radius: 0.5rem;
   border: 1px solid gainsboro;
@@ -169,7 +177,9 @@ export default function Write() {
   const [map, setMap] = useState<any>();
   const [marker, setMarker] = useState<any>();
   const [files, setFiles] = useState<any>([]);
-  const [data, setData] = useState<any>();
+  const [photo, setPhoto] = useState<any>([]);
+  const [data, setData] = useState<ISBoard>();
+  const save = useMutation((param: ISBoard) => loseInsert(param));
 
   useEffect(() => {
     window.kakao.maps.load(() => {
@@ -204,8 +214,8 @@ export default function Write() {
               setData((prev: any) => ({
                 ...prev,
                 addr,
-                sido: result[0].address.region_2depth_name,
-                sigungu: result[0].address.region_3depth_name,
+                sido: result[0].address.region_1depth_name,
+                sigungu: result[0].address.region_2depth_name,
                 dong: result[0].address.region_3depth_name,
                 latitude: mouseEvent.latLng.getLat(),
                 longitude: mouseEvent.latLng.getLng(),
@@ -256,8 +266,8 @@ export default function Write() {
           setData((prev: any) => ({
             ...prev,
             addr,
-            sido: result[0].address.region_2depth_name,
-            sigungu: result[0].address.region_3depth_name,
+            sido: result[0].address.region_1depth_name,
+            sigungu: result[0].address.region_2depth_name,
             dong: result[0].address.region_3depth_name,
             latitude: currentPos.La,
             longitude: currentPos.Ma,
@@ -290,6 +300,17 @@ export default function Write() {
     setData((prev: any) => ({
       ...prev,
       ctt: value,
+    }));
+  };
+
+  const onChangeDate = (event: React.FormEvent<HTMLInputElement>) => {
+    const {
+      currentTarget: { value },
+    } = event;
+
+    setData((prev: any) => ({
+      ...prev,
+      date: value,
     }));
   };
 
@@ -334,12 +355,16 @@ export default function Write() {
   const onChagePhoto = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       if (files.length < 4) {
-        const img = event.target.files[0];
+        const file: File = event?.target?.files[0];
         var reader = new FileReader();
+
+        setFiles((prev: []) => [...prev, file]);
+
         reader.onload = () => {
-          setFiles((prev: any) => [...prev, reader.result]);
+          setPhoto((prev: any) => [...prev, reader.result]);
         };
-        reader.readAsDataURL(img);
+
+        reader.readAsDataURL(file);
         event.target.value = "";
       } else {
         alert("사진은 최대 4개까지 등록 가능합니다.");
@@ -349,15 +374,53 @@ export default function Write() {
 
   const onClickDelete = (idx: number) => {
     setFiles([...files.slice(0, idx), ...files.slice(idx + 1)]);
+    setPhoto([...photo.slice(0, idx), ...photo.slice(idx + 1)]);
   };
 
+  const onSubmit = () => {
+    if (files.length) {
+      files.forEach((file: File) => {
+        const path =
+          "images/lose/" +
+          new Date().getFullYear() +
+          "년/" +
+          (new Date().getMonth() + 1) +
+          "월/";
+        const fileNm =
+          moment().format("YYYYhmmss") + `_${getCookie("id")}_` + file.name;
+        const storageRef = ref(storage, path + fileNm);
+
+        uploadBytes(storageRef, file).then((snapshot) => {
+          getDownloadURL(snapshot.ref).then((downUrl) => {
+            setData((prev: any) => ({
+              ...prev,
+              type: (
+                document.querySelector(
+                  'input[name="type"]:checked'
+                ) as HTMLInputElement
+              ).value,
+              img: prev.img ? [...prev.img, downUrl] : [downUrl],
+            }));
+          });
+        });
+      });
+    } else {
+      setData((prev: any) => ({
+        ...prev,
+        type: (
+          document.querySelector(
+            'input[name="type"]:checked'
+          ) as HTMLInputElement
+        ).value,
+        img: [],
+      }));
+    }
+  };
+  useDidMountEffect(() => {
+    if (data?.img && data?.img.length === files.length) save.mutate(data);
+  }, [data]);
   return (
     <Container>
-      <script
-        type="text/javascript"
-        defer
-        src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=3ac433d8c7d59fc4a01d7669bd060a06&libraries=services&autoload=false`}
-      />
       <Seo title="커뮤니티s" />
       <Grid>
         <Box>
@@ -385,47 +448,72 @@ export default function Write() {
           </div>
           <div
             style={{
+              display: "flex",
+              alignItems: "center",
               position: "relative",
             }}
           >
-            <ImgBigBox>
-              {files?.map((file: string, i: number) => (
-                <ImgBox key={i} onClick={() => onClickDelete(i)}>
-                  <Img src={file} />
-                  <ImCancelCircle />
-                </ImgBox>
-              ))}
-            </ImgBigBox>
-            <input
-              id="img"
-              type="file"
-              accept="image/*"
-              style={{ visibility: "hidden", position: "absolute" }}
-              onChange={onChagePhoto}
+            <Text>일자</Text>
+            <Input
+              id="calendar"
+              placeholder="YYYYMMDD"
+              type="tel"
+              onChange={onChangeDate}
             />
-            <IconBox
-              style={{
-                position: "absolute",
-                right: "8px",
-                bottom: "8px",
-                display: "flex",
-              }}
-              onClick={onClickPhoto}
-            >
-              <MdOutlinePhotoCamera />
-            </IconBox>
+            <MdDateRange style={{ position: "absolute", right: "10px" }} />
           </div>
-          <CTT placeholder="내용을 입력해 주세요." onChange={onChangeCTT} />
-          <AddrBox onClick={onClickAddr}>
-            <InputAddr id="addr" readOnly />
-            <HiSearch />
-          </AddrBox>
+          <div>
+            <Text>사진</Text>
+            <div
+              style={{
+                position: "relative",
+              }}
+            >
+              <ImgBigBox>
+                {photo?.map((file: string, i: number) => (
+                  <ImgBox key={i} onClick={() => onClickDelete(i)}>
+                    <Img src={file} />
+                    <ImCancelCircle />
+                  </ImgBox>
+                ))}
+              </ImgBigBox>
+              <input
+                id="img"
+                type="file"
+                accept="image/*"
+                style={{ visibility: "hidden", position: "absolute" }}
+                onChange={onChagePhoto}
+              />
+              <IconBox
+                style={{
+                  position: "absolute",
+                  right: "8px",
+                  bottom: "8px",
+                  display: "flex",
+                }}
+                onClick={onClickPhoto}
+              >
+                <MdOutlinePhotoCamera />
+              </IconBox>
+            </div>
+          </div>
+          <div>
+            <Text>내용</Text>
+            <CTT placeholder="내용을 입력해 주세요." onChange={onChangeCTT} />
+          </div>
+          <div>
+            <Text>주소</Text>
+            <AddrBox onClick={onClickAddr}>
+              <Input id="addr" readOnly />
+              <HiSearch />
+            </AddrBox>
+          </div>
           <div id="map" style={{ width: "100%", height: "400px" }}></div>
           <div style={{ padding: "10px 0px" }}>
             <IconBox onClick={getCurrentPosBtn}>
               <MdGpsFixed /> 현위치
             </IconBox>
-            <SaveBTN>완료</SaveBTN>
+            <SaveBTN onClick={onSubmit}>완료</SaveBTN>
           </div>
         </Box>
       </Grid>

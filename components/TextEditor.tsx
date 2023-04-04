@@ -13,6 +13,7 @@ import {
 } from "firebase/storage";
 import { communityWrite } from "../api/backEndApi";
 import Loader from "./Loader";
+import { getCookie } from "../common/utills";
 
 const ReactQuill = dynamic(
   async () => {
@@ -73,7 +74,8 @@ export default function TextEditor() {
         "년/" +
         (new Date().getMonth() + 1) +
         "월/";
-      const fileNm = moment().format("YYYYhmmss") + "_jacob_" + file.name;
+      const fileNm =
+        moment().format("YYYYhmmss") + `_${getCookie("id")}_` + file.name;
       const storageRef = ref(storage, path + fileNm);
 
       uploadBytes(storageRef, file).then((snapshot) => {
