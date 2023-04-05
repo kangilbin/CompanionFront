@@ -328,3 +328,16 @@ export async function loseList(
       }
     });
 }
+
+// 커뮤니티 게시글 내용 조회
+export async function loseRead(id: string) {
+  return axios
+    .get(`${BOARD_PATH}/lose/read/${id}`)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.log("오류 발생 : ", error.response.status);
+      if (error.response.status === 404) {
+        //window.location.href = "/404";
+      }
+    });
+}
