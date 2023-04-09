@@ -20,6 +20,7 @@ import Image from "next/image";
 import BoardWriting from "../../components/community/BoardWriting";
 import { useEffect, useState, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/router";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
@@ -220,6 +221,7 @@ export default function Read({
   params,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
   const [comment, setComment] = useState("");
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
@@ -306,7 +308,9 @@ export default function Read({
   }, [isReply]);
 
   const onClick = (type: string) => {
-    if (comment.length === 0) {
+    if (!Boolean(getCookie("token"))) {
+      router.push("/login");
+    } else if (comment.length === 0) {
       alert("댓글 내용을 작성해주세요.");
     } else {
       const obj = {

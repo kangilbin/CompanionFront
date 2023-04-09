@@ -9,6 +9,8 @@ import Loader from "./../../components/Loader";
 import { useEffect, useState, useRef } from "react";
 import { AnimatePresence, motion, useScroll } from "framer-motion";
 import BoardCard from "../../components/community/BoardCard";
+import { useRouter } from "next/router";
+import { getCookie } from "../../common/utills";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
@@ -54,7 +56,7 @@ const GridSearch = styled.div`
   }
 `;
 
-const Page = styled.a`
+const Page = styled.div`
   cursor: pointer;
   padding: 8px;
   border: 1px solid;
@@ -130,6 +132,7 @@ export default function Community() {
   const [sortText, setSortText] = useState("최신순");
   const [sort, setSort] = useState("reg_time");
   const outside = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const { isLoading, data, fetchNextPage, refetch } = useInfiniteQuery<any>(
     ["community_list"],
@@ -163,6 +166,13 @@ export default function Community() {
     setSort(event.target.attributes[0].value);
     setIsSort(false);
   }
+  const wirtePage = () => {
+    if (Boolean(getCookie("token"))) {
+      router.push("/community/write");
+    } else {
+      router.push("/login");
+    }
+  };
   return (
     <Container
       onClick={(e: any) => {
@@ -176,12 +186,10 @@ export default function Community() {
       ) : (
         <Grid>
           <GridHead>
-            <Link href="/community/write" legacyBehavior>
-              <Page>
-                <SlPencil style={{ marginRight: "5px" }} />
-                작성하기
-              </Page>
-            </Link>
+            <Page onClick={wirtePage}>
+              <SlPencil style={{ marginRight: "5px" }} />
+              작성하기
+            </Page>
             <Title>커뮤니티</Title>
             <div>
               <Sort onClick={() => setIsSort((prev) => !prev)}>

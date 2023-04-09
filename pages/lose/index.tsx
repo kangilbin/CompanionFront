@@ -10,7 +10,8 @@ import { useEffect, useState, useRef } from "react";
 import { AnimatePresence, motion, useScroll } from "framer-motion";
 import DatePicker from "../../components/DatePicker";
 import SBoardCard from "../../components/lose/SBoardCard";
-import { area } from "../../common/utills";
+import { area, getCookie } from "../../common/utills";
+import { useRouter } from "next/router";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.bgColor};
@@ -56,7 +57,7 @@ const GridSearch = styled.div`
   }
 `;
 
-const Page = styled.a`
+const Page = styled.div`
   cursor: pointer;
   padding: 8px;
   border: 1px solid;
@@ -160,6 +161,7 @@ const searchVariants = {
 
 export default function Community() {
   const { scrollYProgress } = useScroll();
+  const router = useRouter();
   const [isSort, setIsSort] = useState(false);
   const [sigungu, setSigungu] = useState<any>([]);
   const [searchOpt, setSearchOpt] = useState<any>({
@@ -171,7 +173,6 @@ export default function Community() {
     sigungu: "",
   });
   const outside = useRef<HTMLDivElement>(null);
-  // keyword, page, type, start, end, sido, sigungu
   const { isLoading, data, fetchNextPage, refetch } = useInfiniteQuery<any>(
     ["lose_list"],
     ({ pageParam = 1 }) =>
@@ -238,7 +239,13 @@ export default function Community() {
       setSigungu(area.get(value));
     }
   };
-
+  const wirtePage = () => {
+    if (Boolean(getCookie("token"))) {
+      router.push("/community/write");
+    } else {
+      router.push("/login");
+    }
+  };
   return (
     <Container
       onClick={(e: any) => {
@@ -252,12 +259,10 @@ export default function Community() {
       ) : (
         <Grid>
           <GridHead>
-            <Link href="/lose/write" legacyBehavior>
-              <Page>
-                <SlPencil style={{ marginRight: "5px" }} />
-                작성하기
-              </Page>
-            </Link>
+            <Page onClick={wirtePage}>
+              <SlPencil style={{ marginRight: "5px" }} />
+              작성하기
+            </Page>
             <Title>
               <TargetType
                 className={searchOpt.type === "" ? "sort_active" : ""}

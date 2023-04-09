@@ -1,0 +1,10 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /exclude
+
+# Host
+Host: https://www.meowbow.shop
+
+# Sitemaps
+Sitemap: https://www.meowbow.shop/sitemap.xml
