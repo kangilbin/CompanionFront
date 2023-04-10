@@ -104,8 +104,6 @@ export default function Read({
   params,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [isLoading, setIsLoading] = useState(true);
-  const [map, setMap] = useState<any>();
-  const [marker, setMarker] = useState<any>();
   const results = useQueries({
     queries: [
       {
@@ -132,7 +130,7 @@ export default function Read({
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: false,
+    autoplay: true,
     autoplaySpeed: 3000,
   };
 

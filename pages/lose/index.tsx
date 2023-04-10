@@ -241,7 +241,7 @@ export default function Community() {
   };
   const wirtePage = () => {
     if (Boolean(getCookie("token"))) {
-      router.push("/community/write");
+      router.push("/lose/write");
     } else {
       router.push("/login");
     }
@@ -321,7 +321,7 @@ export default function Community() {
                         }}
                       >
                         <SelectBox onChange={onChageSido} id="sido">
-                          <option>전체</option>
+                          <option value="">전체</option>
                           <option>서울</option>
                           <option>경기</option>
                           <option>인천</option>
