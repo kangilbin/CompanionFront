@@ -1,6 +1,6 @@
 import YouTube, { YouTubeProps } from "react-youtube";
 import { useRecoilValue } from "recoil";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { IoVolumeMuteOutline, IoVolumeMediumOutline } from "react-icons/io5";
 import { isVideoAtom } from "../../atoms";
