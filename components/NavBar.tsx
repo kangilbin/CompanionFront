@@ -169,7 +169,7 @@ const userVariants = {
   leaving: { opacity: 0, scale: 0, y: -30 },
 };
 
-export default function NavBar() {
+export default function NavBar({ isMobile }: { isMobile: boolean }) {
   const router = useRouter();
   const [info, setInfo] = useState();
   const [isOpenInfo, setIsOpenInfo] = useState(false);
@@ -218,55 +218,57 @@ export default function NavBar() {
           {router.pathname === "/lose" && <Line layoutId="line" />}
         </Page>
       </Link>
-      <SubTab>
-        <Link href="/adoption" legacyBehavior>
-          <SubPage>유기동물</SubPage>
-        </Link>
-        {Boolean(info) ? (
-          <div>
-            <Info>
-              <FaUserCircle onClick={() => setIsOpenInfo((prev) => !prev)} />
-            </Info>
-            {isOpenInfo && (
-              <InfoList
-                variants={userVariants}
-                initial="initial"
-                animate="visible"
-                exit="leaving"
-                ref={ref}
-                //onClick={onClickSort}
-              >
-                <InfoItem>계정정보</InfoItem>
-                <InfoItem
-                  onClick={() => {
-                    removeCookie("token", { path: "/" });
-                    removeCookie("id", { path: "/" });
-                  }}
+      {!isMobile && (
+        <SubTab>
+          <Link href="/adoption" legacyBehavior>
+            <SubPage>유기동물</SubPage>
+          </Link>
+          {Boolean(info) ? (
+            <div>
+              <Info>
+                <FaUserCircle onClick={() => setIsOpenInfo((prev) => !prev)} />
+              </Info>
+              {isOpenInfo && (
+                <InfoList
+                  variants={userVariants}
+                  initial="initial"
+                  animate="visible"
+                  exit="leaving"
+                  ref={ref}
+                  //onClick={onClickSort}
                 >
-                  로그아웃
-                </InfoItem>
-              </InfoList>
-            )}
-          </div>
-        ) : (
-          <UserBox>
-            <LoginBtn
-              onClick={() => {
-                router.push("/login");
-              }}
-            >
-              로그인
-            </LoginBtn>
-            <JoinBtn
-              onClick={() => {
-                router.push("/join");
-              }}
-            >
-              회원가입
-            </JoinBtn>
-          </UserBox>
-        )}
-      </SubTab>
+                  <InfoItem>계정정보</InfoItem>
+                  <InfoItem
+                    onClick={() => {
+                      removeCookie("token", { path: "/" });
+                      removeCookie("id", { path: "/" });
+                    }}
+                  >
+                    로그아웃
+                  </InfoItem>
+                </InfoList>
+              )}
+            </div>
+          ) : (
+            <UserBox>
+              <LoginBtn
+                onClick={() => {
+                  router.push("/login");
+                }}
+              >
+                로그인
+              </LoginBtn>
+              <JoinBtn
+                onClick={() => {
+                  router.push("/join");
+                }}
+              >
+                회원가입
+              </JoinBtn>
+            </UserBox>
+          )}
+        </SubTab>
+      )}
     </Menu>
   );
 }

@@ -1,10 +1,13 @@
 import NavBar from "./NavBar";
 import styled from "styled-components";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+import NavBT from "./NavBT";
+
 const Container = styled.div`
   display: grid;
   grid-template-columns: repeat(10, 1fr);
+  margin-bottom: 25%;
 `;
 const Advertise = styled.div`
   grid-column: span 1;
@@ -15,7 +18,6 @@ const MainGird = styled.div<{ isMobile: Boolean }>`
 
 export default function Layout({ children }: React.PropsWithChildren) {
   const [mobile, setMobile] = useState(false);
-
   useEffect(() => {
     const user = navigator.userAgent;
     if (user.indexOf("iPhone") > -1 || user.indexOf("Android") > -1) {
@@ -25,11 +27,14 @@ export default function Layout({ children }: React.PropsWithChildren) {
 
   return (
     <>
-      <NavBar />
+      <NavBar isMobile={mobile} />
       {mobile ? (
-        <Container>
-          <MainGird isMobile={mobile}>{children}</MainGird>
-        </Container>
+        <>
+          <Container>
+            <MainGird isMobile={mobile}>{children}</MainGird>
+          </Container>
+          <NavBT />
+        </>
       ) : (
         <Container>
           <Advertise></Advertise>
