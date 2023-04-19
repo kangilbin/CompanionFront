@@ -155,7 +155,11 @@ export default function Read({
   }, [isLoading]);
   return (
     <Container>
-      <Seo title="찾습니다s" />
+      <Seo
+        title="찾습니다s 글 상세 페이지"
+        description="찾습니다s 글 상세 페이지"
+        url={`https://www.meowbow.shop/lose/read?id=${params.id}`}
+      />
       {isLoading ? (
         <Loader />
       ) : (

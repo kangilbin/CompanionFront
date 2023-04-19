@@ -180,7 +180,11 @@ export default function Community() {
           setIsSort(false);
       }}
     >
-      <Seo title="커뮤니티s" />
+      <Seo
+        title="커뮤니티s"
+        description="반려동물 커뮤니티 페이지"
+        url="https://www.meowbow.shop/community"
+      />
       {isLoading ? (
         <Loader />
       ) : (

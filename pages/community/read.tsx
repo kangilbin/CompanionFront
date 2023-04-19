@@ -362,7 +362,11 @@ export default function Read({
           setIsOpen(false);
       }}
     >
-      <Seo title="커뮤니티s" />
+      <Seo
+        title="커뮤니티s 글 상세 페이지"
+        description="찾습니다s 글 상세 페이지"
+        url={`https://www.meowbow.shop/community/read?id=${params.id}`}
+      />
       {isLoading ? (
         <Loader />
       ) : (

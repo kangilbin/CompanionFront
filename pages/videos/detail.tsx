@@ -53,7 +53,11 @@ export default function Detail() {
 
   return (
     <Container>
-      <Seo title={value?.snippet.title} />
+      <Seo
+        title={value?.snippet.title}
+        description="반려동물 영상 상세페이지"
+        url=""
+      />
       <Grid>
         <ItemExp>
           <YouTube

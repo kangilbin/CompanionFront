@@ -61,7 +61,11 @@ export default function Main() {
   );
   return (
     <Container id="ctn">
-      <Seo title="간택당한 집사s" />
+      <Seo
+        title="간택당한 집사s"
+        description="유기 동물 정보와 반려동물 관련 정보를 얻을 수 있는 커뮤니트 사이트입니다."
+        url="https://www.meowbow.shop"
+      />
       {isVLoading && isNLoading ? (
         <Loader />
       ) : (

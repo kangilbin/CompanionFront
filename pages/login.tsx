@@ -144,7 +144,11 @@ export default function Login() {
   };
   return (
     <Container>
-      <Seo title="로그인s" />
+      <Seo
+        title="로그인s"
+        description="로그인 페이지"
+        url="https://www.meowbow.shop/login"
+      />
       <Grid>
         <div>
           <div style={{ padding: "2rem" }}>

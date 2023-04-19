@@ -69,7 +69,11 @@ export default function Adoption() {
   }, [obj, refetch]);
   return (
     <Container>
-      <Seo title="유기동물s" />
+      <Seo
+        title="유기동물s"
+        description="유기동물 입양/보호소 정보"
+        url="https://www.meowbow.shop/adoption"
+      />
       {isLoading ? (
         <Loader />
       ) : (

@@ -196,7 +196,11 @@ export default function Join() {
 
   return (
     <Container>
-      <Seo title="회원가입s" />
+      <Seo
+        title="회원가입s"
+        description="간택 당하셨습니다."
+        url="https://www.meowbow.shop/join"
+      />
       <Grid>
         <JoinBox onSubmit={handleSubmit(onValid)}>
           <ItemBox>

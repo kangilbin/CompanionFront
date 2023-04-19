@@ -421,7 +421,11 @@ export default function Write() {
   }, [data]);
   return (
     <Container>
-      <Seo title="커뮤니티s" />
+      <Seo
+        title="실종/보호/목격 작성"
+        description="반려동물 실종/보호/목격 글 작성 페이지"
+        url="https://www.meowbow.shop/lose/write"
+      />
       <Grid>
         <Box>
           <div>

@@ -111,7 +111,11 @@ export default function Video() {
 
   return (
     <Container id="ctn">
-      <Seo title="영상s" />
+      <Seo
+        title="영상s"
+        description="반려동물 영상 페이지"
+        url="https://www.meowbow.shop/videos"
+      />
       {isLoading ? (
         <Loader />
       ) : (

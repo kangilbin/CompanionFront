@@ -23,7 +23,11 @@ const GridBody = styled.div`
 export default function Write() {
   return (
     <Container>
-      <Seo title="커뮤니티s" />
+      <Seo
+        title="반려동물 커뮤니티 작성"
+        description="반려동물 커뮤니티 글 작성 페이지"
+        url="https://www.meowbow.shop/community/write"
+      />
       <Grid>
         <GridBody>
           <TextEditor />

@@ -253,7 +253,11 @@ export default function Community() {
           setIsSort(false);
       }}
     >
-      <Seo title="찾습니다s" />
+      <Seo
+        title="찾습니다s"
+        description="반려동물 실종/보호/목격 글 목록"
+        url="https://www.meowbow.shop/lose"
+      />
       {isLoading ? (
         <Loader />
       ) : (
