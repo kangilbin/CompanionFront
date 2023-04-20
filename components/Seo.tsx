@@ -13,6 +13,13 @@ export default function Seo({ title, description, url }: IProps) {
       <meta property="og:type" content="website" />
       <meta property="og:title" content={title || "간택당한 집사s"} />
       <meta
+        name="description"
+        content={
+          description ||
+          "유기 동물 정보와 반려동물 관련 정보를 얻을 수 있는 커뮤니트 사이트입니다."
+        }
+      ></meta>
+      <meta
         name="og:description"
         content={
           description ||
